@@ -2,3 +2,7 @@
 
 package aws
 
+// Importing a service package runs its init, which registers its checks.
+import (
+	_ "github.com/prowler-cloud/prowler/prowler-go/pkg/provider/aws/services/s3"
+)
