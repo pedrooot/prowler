@@ -18,6 +18,7 @@ import (
 
 func main() {
 	source := flag.String("source", "../prowler/providers", "root of the Python providers tree")
+	compliance := flag.String("compliance", "../prowler/compliance", "root of the Python compliance tree")
 	out := flag.String("out", "pkg/provider", "root of the Go providers tree")
 	flag.Parse()
 
@@ -43,6 +44,52 @@ func main() {
 		}
 		fmt.Printf("%-14s %4d checks %3d services\n", provider, len(metadata), countServices(metadata))
 	}
+
+	frameworks, err := mirrorCompliance(*compliance, "pkg/compliance/frameworks")
+	if err != nil {
+		fail(err)
+	}
+	fmt.Printf("%-14s %4d frameworks\n", "compliance", frameworks)
+}
+
+// mirrorCompliance copies the framework definitions into the Go tree so they
+// can be embedded, keeping the JSON files in the Python tree authoritative.
+func mirrorCompliance(source, out string) (int, error) {
+	if err := os.RemoveAll(out); err != nil {
+		return 0, err
+	}
+
+	count := 0
+	err := filepath.WalkDir(source, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() || !strings.HasSuffix(d.Name(), ".json") {
+			return err
+		}
+		raw, err := os.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		var framework struct {
+			Framework string `json:"Framework"`
+			Provider  string `json:"Provider"`
+		}
+		if err := json.Unmarshal(raw, &framework); err != nil {
+			return fmt.Errorf("%s: %w", path, err)
+		}
+
+		// The provider comes from the directory the file lives in, since
+		// that is what the CLI's --compliance names are scoped by.
+		provider := filepath.Base(filepath.Dir(path))
+		dir := filepath.Join(out, provider)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
+		if err := os.WriteFile(filepath.Join(dir, d.Name()), raw, 0o644); err != nil {
+			return err
+		}
+		count++
+		return nil
+	})
+	return count, err
 }
 
 func collect(root string) (map[string][]*check.Metadata, error) {

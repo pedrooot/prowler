@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/prowler-cloud/prowler/prowler-go/pkg/check"
+	"github.com/prowler-cloud/prowler/prowler-go/pkg/compliance"
 )
 
 // runner is the default Runner: it resolves the requested checks and, once
@@ -33,8 +34,42 @@ func (r *runner) list(provider string, opts *Options) (bool, error) {
 		return true, printLines(r.registry.Categories(provider))
 	case opts.Listing.Checks:
 		return true, printLines(r.registry.ForProvider(provider))
+	case opts.Listing.Compliance:
+		set, err := compliance.ForProvider(provider)
+		if err != nil {
+			return true, err
+		}
+		return true, printLines(set.Names())
+	case len(opts.Listing.ComplianceRequirements) > 0:
+		return true, r.listRequirements(provider, opts.Listing.ComplianceRequirements)
 	}
 	return false, nil
+}
+
+// listRequirements prints each requirement of the named frameworks together
+// with the checks that cover it.
+func (r *runner) listRequirements(provider string, frameworks []string) error {
+	set, err := compliance.ForProvider(provider)
+	if err != nil {
+		return err
+	}
+	for _, name := range frameworks {
+		framework, ok := set[name]
+		if !ok {
+			return fmt.Errorf("invalid compliance framework specified: %s", name)
+		}
+		fmt.Printf("Framework: %s\nVersion: %s\nProvider: %s\n\n", framework.Framework, framework.Version, framework.Provider)
+		for _, requirement := range framework.Requirements {
+			fmt.Printf("Requirement Id: %s\n", requirement.Id)
+			fmt.Printf("Description: %s\n", requirement.Description)
+			fmt.Printf("Checks:\n")
+			for _, id := range requirement.Checks {
+				fmt.Printf("\t- %s\n", id)
+			}
+			fmt.Println()
+		}
+	}
+	return nil
 }
 
 func printLines(values []string) error {
