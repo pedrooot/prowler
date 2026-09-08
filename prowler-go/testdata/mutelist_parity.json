@@ -1,0 +1,161 @@
+[
+  {
+    "name": "wildcard match",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        ec2_instance_detailed_monitoring_enabled:\n          Regions: ['*']\n          Resources: ['i-123456789']\n",
+    "account": "111",
+    "check": "ec2_instance_detailed_monitoring_enabled",
+    "region": "eu-west-1",
+    "resource": "i-123456789",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "resource mismatch",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        ec2_instance_detailed_monitoring_enabled:\n          Regions: ['*']\n          Resources: ['i-123456789']\n",
+    "account": "111",
+    "check": "ec2_instance_detailed_monitoring_enabled",
+    "region": "eu-west-1",
+    "resource": "i-999999999",
+    "tags": {},
+    "expected": false
+  },
+  {
+    "name": "account scoped hit",
+    "doc": "Mutelist:\n  Accounts:\n    '123456789012':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n",
+    "account": "123456789012",
+    "check": "any_check",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "account scoped miss",
+    "doc": "Mutelist:\n  Accounts:\n    '123456789012':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n",
+    "account": "999999999999",
+    "check": "any_check",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {},
+    "expected": false
+  },
+  {
+    "name": "region hit",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['eu-west-1', 'us-east-1']\n          Resources: ['*']\n",
+    "account": "1",
+    "check": "c",
+    "region": "us-east-1",
+    "resource": "r",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "region miss",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['eu-west-1', 'us-east-1']\n          Resources: ['*']\n",
+    "account": "1",
+    "check": "c",
+    "region": "ap-south-1",
+    "resource": "r",
+    "tags": {},
+    "expected": false
+  },
+  {
+    "name": "tags AND both",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Tags:\n            - 'Name=Admin'\n            - 'Env=Prod'\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {
+      "Env": "Prod",
+      "Name": "Admin"
+    },
+    "expected": true
+  },
+  {
+    "name": "tags AND one missing",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Tags:\n            - 'Name=Admin'\n            - 'Env=Prod'\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {
+      "Name": "Admin"
+    },
+    "expected": false
+  },
+  {
+    "name": "tags OR alternation hit",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Tags:\n            - 'Name=Admin|Env=Prod'\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {
+      "Env": "Prod"
+    },
+    "expected": true
+  },
+  {
+    "name": "tags OR alternation miss",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Tags:\n            - 'Name=Admin|Env=Prod'\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {
+      "Team": "sec"
+    },
+    "expected": false
+  },
+  {
+    "name": "exception region unmutes",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Exceptions:\n            Regions: ['eu-west-1']\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {},
+    "expected": false
+  },
+  {
+    "name": "exception other region still muted",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Exceptions:\n            Regions: ['eu-west-1']\n",
+    "account": "1",
+    "check": "c",
+    "region": "us-east-1",
+    "resource": "r",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "lambda prefix maps",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        lambda_function_no_secrets_in_code:\n          Regions: ['*']\n          Resources: ['*']\n",
+    "account": "1",
+    "check": "awslambda_function_no_secrets_in_code",
+    "region": "eu-west-1",
+    "resource": "r",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "exception accounts and regions both",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['*']\n          Exceptions:\n            Accounts: ['111']\n            Regions: ['eu-west-1']\n",
+    "account": "111",
+    "check": "c",
+    "region": "us-east-1",
+    "resource": "r",
+    "tags": {},
+    "expected": true
+  },
+  {
+    "name": "resource regex partial",
+    "doc": "Mutelist:\n  Accounts:\n    '*':\n      Checks:\n        '*':\n          Regions: ['*']\n          Resources: ['bucket-prod']\n",
+    "account": "1",
+    "check": "c",
+    "region": "eu-west-1",
+    "resource": "arn:aws:s3:::bucket-prod-eu",
+    "tags": {},
+    "expected": true
+  }
+]
