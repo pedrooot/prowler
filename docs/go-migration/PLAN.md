@@ -1,6 +1,6 @@
 # Migración de Prowler CLI + SDK a Go
 
-Estado: propuesta para revisión
+Estado: aprobado, en ejecución
 Rama: `test-go` (base `origin/master` @ 3c0cb3c)
 
 ## 1. Punto de partida medido
@@ -216,3 +216,29 @@ marca el volumen: AWS primero por masa crítica, el resto en paralelo detrás.
 - Pico de memoria por debajo del de la implementación Python en el escenario
   AWS completo, verificado en CI.
 - Binario sin dependencia de runtime Python, salvo `pwsh` para M365.
+
+## 8. Estado de ejecución
+
+| Fase | Estado |
+|---|---|
+| F0 Fundamentos, codegen, CI | Completa |
+| F1 Núcleo del SDK | Completa |
+| F2 CLI | Completa |
+| F3 Proveedores | AWS completo; 13 pendientes |
+| F4 Servicios | 2 de 169 (s3, s3control) |
+| F5 Checks | 5 de 1.181 |
+| F6 Integraciones | Pendiente |
+| F7 Paridad | Arnés en marcha (mutelist, compliance, memoria) |
+| F8 Corte del API | Pendiente |
+
+Verificaciones que ya se sostienen:
+
+- Los 1.181 metadatos de Python se parsean y validan con el modelo Go sin un
+  solo fallo.
+- Las listas de frameworks de compliance coinciden con la salida de Python en
+  los nueve proveedores que los tienen.
+- Los 26 alias de flags que acepta argparse se aceptan también en Go.
+- El mutelist coincide con la implementación Python en los 15 casos del
+  golden, incluidas las excepciones y el arrastre del valor acumulado.
+- El pico de servicios simultáneamente en memoria es 2 sobre un escaneo de 20
+  servicios, y el test falla con 20 si se retira la liberación.

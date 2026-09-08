@@ -16,6 +16,11 @@ type serviceStore struct {
 	mu      sync.Mutex
 	demand  map[string]int
 	entries map[string]*serviceEntry
+
+	// peakLive is the high-water mark of simultaneously collected services.
+	// It is what the release design promises to keep small, and what the
+	// memory regression test asserts on.
+	peakLive int
 }
 
 type serviceEntry struct {
@@ -40,6 +45,9 @@ func (s *serviceStore) get(ctx context.Context, name string) (any, error) {
 	if !ok {
 		entry = &serviceEntry{}
 		s.entries[name] = entry
+		if len(s.entries) > s.peakLive {
+			s.peakLive = len(s.entries)
+		}
 	}
 	s.mu.Unlock()
 
@@ -68,10 +76,16 @@ func (s *serviceStore) release(names []string) {
 	}
 }
 
-// live reports how many services currently hold collected resources. It
-// exists for the memory regression tests.
+// live reports how many services currently hold collected resources.
 func (s *serviceStore) live() int {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return len(s.entries)
+}
+
+// peak reports the most services that ever held resources at once.
+func (s *serviceStore) peak() int {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.peakLive
 }

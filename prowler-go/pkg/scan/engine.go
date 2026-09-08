@@ -89,6 +89,19 @@ type Engine struct {
 	// startedAt stamps every finding of the scan, matching the single
 	// scan-wide timestamp the Python implementation reports.
 	startedAt time.Time
+
+	store *serviceStore
+}
+
+// PeakServicesInFlight reports the most services that held collected
+// resources at the same time during the last run. The engine releases a
+// service as soon as its last consumer finishes, so this stays close to the
+// widest single check's Requires() rather than growing with the scan.
+func (e *Engine) PeakServicesInFlight() int {
+	if e.store == nil {
+		return 0
+	}
+	return e.store.peak()
 }
 
 // Option configures an Engine.
@@ -135,6 +148,7 @@ func New(provider Provider, registry *check.Registry, version string, opts ...Op
 func (e *Engine) Run(ctx context.Context, checkIDs []string, sink Sink) (*finding.Stats, error) {
 	groups := e.groupByService(checkIDs)
 	store := newServiceStore(e.provider, demandOf(groups))
+	e.store = store
 	stats := finding.NewStats()
 
 	findings := make(chan *finding.Finding, e.limits.Buffer)
