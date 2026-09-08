@@ -1,0 +1,1049 @@
+[
+  {
+    "Provider": "cloudflare",
+    "CheckID": "dns_record_cname_target_valid",
+    "CheckTitle": "DNS records pointing to hostnames have valid targets without takeover risk",
+    "CheckType": [],
+    "ServiceName": "dns",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "DNSRecord",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare DNS records** (CNAME, MX, NS, SRV) that point to hostnames are assessed for **dangling record** vulnerabilities by checking if the target domain resolves to a valid address, preventing **subdomain takeover**, **mail interception**, and **service hijacking** attacks.",
+    "Risk": "Dangling **DNS records** pointing to non-existent targets create multiple vulnerabilities.\n- **Confidentiality**: dangling CNAME/NS allows subdomain takeover; dangling MX allows mail interception\n- **Integrity**: attackers can impersonate your organization, intercept emails, or hijack services\n- **Availability**: legitimate services may be disrupted or redirected to attacker-controlled infrastructure",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Identify CNAME, MX, NS, or SRV records with dangling targets\n4. Either update the record to point to a valid target or delete the record\n5. If the target service was decommissioned, remove the DNS record"
+      },
+      "Recommendation": {
+        "Text": "Remove or update **dangling DNS records** to prevent takeover and interception attacks.\n- Regularly audit DNS records when decommissioning services\n- Remove CNAME, MX, NS, and SRV records pointing to deprovisioned resources\n- Monitor for unauthorized changes to DNS records\n- Consider using DNS monitoring tools to detect dangling records",
+        "Url": "https://hub.prowler.com/checks/cloudflare/dns_record_cname_target_valid"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Subdomain takeover occurs when a CNAME or NS record points to a service that has been deprovisioned, allowing attackers to claim that service and control the subdomain. Similarly, dangling MX records can allow mail interception, and dangling SRV records can expose service discovery vulnerabilities."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "dns_record_no_internal_ip",
+    "CheckTitle": "DNS records do not expose internal IP addresses",
+    "CheckType": [],
+    "ServiceName": "dns",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "DNSRecord",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare DNS records** are assessed for **internal IP exposure** by checking if A or AAAA records point to private, loopback, or reserved IP addresses which could **leak internal network structure**.",
+    "Risk": "DNS records exposing **internal IP addresses** leak sensitive network information.\n- **Confidentiality**: reveals internal network topology and addressing schemes to attackers\n- **Integrity**: provides reconnaissance data for targeted attacks on internal infrastructure\n- **Availability**: internal IPs in public DNS may indicate misconfiguration affecting service routing",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Identify A/AAAA records pointing to internal IP addresses\n4. Update records to point to public IP addresses or remove if not needed\n5. Use split-horizon DNS if internal resolution is required"
+      },
+      "Recommendation": {
+        "Text": "Remove **internal IP addresses** from public DNS records.\n- Use split-horizon DNS for internal service resolution\n- Ensure DNS records only contain publicly routable IP addresses\n- Review DNS records after network changes or migrations\n- Consider using Cloudflare Access for secure internal service access",
+        "Url": "https://hub.prowler.com/checks/cloudflare/dns_record_no_internal_ip"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Internal IP ranges include: 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16 (IPv4), fc00::/7 (IPv6 ULA), and loopback addresses. These should not appear in public DNS records."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "dns_record_no_wildcard",
+    "CheckTitle": "DNS records do not use wildcard entries",
+    "CheckType": [],
+    "ServiceName": "dns",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "DNSRecord",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare DNS records** are assessed for **wildcard usage** by checking if A, AAAA, CNAME, MX, or SRV records use wildcard entries (*.example.com) which can **increase attack surface**, expose unintended services, or allow mail interception.",
+    "Risk": "**Wildcard DNS records** can expose unintended services and increase attack surface.\n- **Confidentiality**: any subdomain resolves, potentially exposing internal naming conventions; wildcard MX allows mail interception\n- **Integrity**: attackers can access unintended services via arbitrary subdomains\n- **Availability**: wildcard records may route traffic or services not designed for public access",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Identify wildcard DNS records (starting with *.)\n4. Evaluate if the wildcard is necessary for your use case\n5. Replace wildcard records with specific subdomain records where possible"
+      },
+      "Recommendation": {
+        "Text": "Avoid using **wildcard DNS records** unless absolutely necessary.\n- Use specific subdomain records instead of wildcards\n- If wildcards are required, ensure the target service handles unknown subdomains securely\n- Document the business justification for any wildcard records\n- Combine with proper web server configuration to reject unknown hosts",
+        "Url": "https://hub.prowler.com/checks/cloudflare/dns_record_no_wildcard"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/create-dns-records/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Wildcard DNS records (*.example.com) cause any subdomain query to resolve. While useful for some applications, they can expose services unintentionally and make subdomain enumeration easier for attackers. Wildcard MX records can accept mail for any subdomain, and wildcard SRV records can expose services on arbitrary subdomains."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "dns_record_proxied",
+    "CheckTitle": "Cloudflare proxy is enabled for applicable DNS records",
+    "CheckType": [],
+    "ServiceName": "dns",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "DNSRecord",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare DNS records** are assessed for **proxy configuration** by checking if A, AAAA, and CNAME records are proxied through Cloudflare to benefit from **DDoS protection**, **WAF**, and **caching** capabilities.",
+    "Risk": "Unproxied **DNS records** expose origin server IP addresses directly to the internet.\n- **Confidentiality**: origin IP exposure enables targeted reconnaissance and attacks\n- **Integrity**: direct access to origin bypasses WAF and security controls\n- **Availability**: origin is exposed to DDoS attacks without Cloudflare protection",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Cloudflare proxy for DNS records\nresource \"cloudflare_record\" \"proxied_record\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"www\"\n  content = \"192.0.2.1\"\n  type    = \"A\"\n  proxied = true # Critical: enables DDoS protection, WAF, and caching\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. For each A, AAAA, or CNAME record that should be protected\n4. Click Edit and toggle Proxy status to Proxied (orange cloud)\n5. Save the changes and verify traffic flows through Cloudflare"
+      },
+      "Recommendation": {
+        "Text": "Enable the **Cloudflare proxy** (orange cloud) for DNS records that should be protected.\n- Proxied records benefit from DDoS protection, WAF, and caching\n- Origin server IP addresses are hidden from public DNS queries\n- Apply defense in depth by combining proxy protection with origin hardening\n- Some record types (MX, TXT) cannot be proxied by design",
+        "Url": "https://hub.prowler.com/checks/cloudflare/dns_record_proxied"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/reference/proxied-dns-records/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Only A, AAAA, and CNAME records can be proxied. MX, TXT, and other record types are always DNS-only. Some services may require DNS-only mode for specific use cases."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_always_online_disabled",
+    "CheckTitle": "Always Online is disabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Always Online** configuration by checking if it is disabled to prevent serving **stale cached content** when the origin server is unavailable, which could expose outdated or sensitive information.",
+    "Risk": "With **Always Online** enabled, Cloudflare serves cached pages when the origin is unavailable.\n- **Confidentiality**: stale cache may expose sensitive information that was subsequently removed\n- **Integrity**: outdated content may contain incorrect or superseded information\n- **Availability**: reliance on cached content masks origin failures requiring attention",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Disable Always Online to prevent serving stale cached content\nresource \"cloudflare_zone_settings_override\" \"always_online\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    always_online = \"off\" # Critical: prevents serving potentially stale or sensitive cached content\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Caching \u003e Configuration\n3. Scroll to Always Online\n4. Toggle the setting to Off\n5. Implement proper high availability through redundant origins or load balancing"
+      },
+      "Recommendation": {
+        "Text": "Disable **Always Online** and implement proper high availability solutions.\n- Use redundant origins or load balancing for genuine high availability\n- Stale cached content may contain outdated security information\n- Origin failures should be detected and addressed, not masked\n- Consider Cloudflare Workers for custom failover logic if needed",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_always_online_disabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/cache/how-to/always-online/"
+    ],
+    "Categories": [
+      "resilience"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Always Online is a legacy feature that serves cached copies of pages when the origin is unreachable. Modern high availability should use redundant origins or failover configurations."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_automatic_https_rewrites_enabled",
+    "CheckTitle": "Automatic HTTPS Rewrites is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Automatic HTTPS Rewrites** configuration by checking if it is enabled to automatically rewrite insecure HTTP links to HTTPS, resolving **mixed content issues** and enhancing site security.",
+    "Risk": "Without **Automatic HTTPS Rewrites**, pages may contain mixed content where HTTP resources load over HTTPS pages.\n- **Confidentiality**: insecure resources can be intercepted and modified by attackers\n- **Integrity**: browsers block or warn about mixed content, indicating potential tampering\n- **User Experience**: security warnings degrade trust and some browsers block mixed content entirely",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Automatic HTTPS Rewrites to fix mixed content\nresource \"cloudflare_zone_settings_override\" \"https_rewrites\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    automatic_https_rewrites = \"on\" # Critical: automatically rewrites HTTP URLs to HTTPS\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to Automatic HTTPS Rewrites\n4. Toggle the setting to On\n5. Verify that your site loads correctly without mixed content warnings"
+      },
+      "Recommendation": {
+        "Text": "Enable **Automatic HTTPS Rewrites** as part of a comprehensive HTTPS strategy.\n- Automatically fixes mixed content by rewriting HTTP URLs to HTTPS\n- Combine with **Always Use HTTPS** and **HSTS** for defense in depth\n- Works best when all resources are available over HTTPS\n- Monitor for resources that cannot be rewritten and fix them at the source",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_automatic_https_rewrites_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/automatic-https-rewrites/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This feature works best when combined with Always Use HTTPS to ensure the entire site is served over HTTPS. Some resources may not be rewritable if they don't support HTTPS."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_bot_fight_mode_enabled",
+    "CheckTitle": "Bot Fight Mode is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Bot Fight Mode** configuration by checking if it is enabled to detect and mitigate **automated bot traffic** targeting the zone through browser integrity checks.",
+    "Risk": "Without **Bot Fight Mode**, zones are vulnerable to automated attacks.\n- **Confidentiality**: web scraping bots can harvest sensitive data from your site\n- **Integrity**: credential stuffing attacks can compromise user accounts\n- **Availability**: bot traffic can overwhelm resources causing service degradation",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e Bots\n3. Enable Bot Fight Mode\n4. Monitor bot analytics to fine-tune protection\n5. Consider combining with rate limiting for comprehensive protection"
+      },
+      "Recommendation": {
+        "Text": "Enable **Bot Fight Mode** as part of a layered bot management strategy.\n- Detects and challenges automated bot traffic\n- Protects against web scraping and credential stuffing\n- Combine with rate limiting and WAF rules for comprehensive protection\n- Monitor bot analytics to understand traffic patterns",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_bot_fight_mode_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/bots/get-started/free/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Bot Fight Mode is a free feature that uses browser integrity checks to detect and challenge automated traffic. For more advanced bot management, consider Cloudflare's paid Bot Management product."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_browser_integrity_check_enabled",
+    "CheckTitle": "Cloudflare Zone Browser Integrity Check Is Enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Browser Integrity Check** configuration by verifying that HTTP headers are analyzed to identify requests from bots or clients with missing/invalid browser signatures.",
+    "Risk": "Without **Browser Integrity Check**, malformed or suspicious requests reach the origin.\n- **Confidentiality**: basic bots can access and scrape content without challenge\n- **Integrity**: requests with invalid headers may exploit application vulnerabilities\n- **Availability**: automated traffic without browser signatures consumes resources",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Browser Integrity Check\nresource \"cloudflare_zone_settings_override\" \"browser_check\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    browser_check = \"on\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e Settings\n3. Enable Browser Integrity Check\n4. This feature is enabled by default on most Cloudflare plans"
+      },
+      "Recommendation": {
+        "Text": "Enable **Browser Integrity Check** to filter basic bot traffic.\n- Validates HTTP headers to identify non-browser requests\n- Challenges requests with missing or invalid browser signatures\n- Enabled by default on most Cloudflare plans\n- Low impact on legitimate users with standard browsers",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_browser_integrity_check_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/tools/browser-integrity-check/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Browser Integrity Check is enabled by default on most Cloudflare plans. It provides basic protection against requests with invalid or missing browser headers."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_challenge_passage_configured",
+    "CheckTitle": "Cloudflare Zone Challenge Passage Is Configured Between 15 and 45 Minutes",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Challenge Passage** (challenge TTL) configuration by checking if it is set between **15 minutes** and **45 minutes** to balance security with user experience.",
+    "Risk": "Improperly configured **Challenge Passage** can impact security or user experience.\n- **Confidentiality**: TTL set too long may allow attackers extended access after passing initial challenge\n- **Integrity**: security controls become less effective with overly permissive TTL settings\n- **Availability**: TTL set too short causes excessive challenges degrading user experience",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Configure Challenge Passage between 15-45 minutes\nresource \"cloudflare_zone_settings_override\" \"challenge_passage\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    challenge_ttl = 1800 # 30 minutes - recommended default\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e Settings\n3. Scroll to Challenge Passage\n4. Set the value between 15 and 45 minutes\n5. The default value of 30 minutes is recommended for most use cases"
+      },
+      "Recommendation": {
+        "Text": "Configure **Challenge Passage** between 15 and 45 minutes.\n- Values below 15 minutes may frustrate legitimate users with excessive challenges\n- Values above 45 minutes give attackers too much time after passing challenges\n- The default Cloudflare value of 30 minutes is recommended for most use cases\n- Adjust based on your specific threat model and user experience requirements",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_challenge_passage_configured"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/tools/challenge-passage/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Challenge Passage determines how long a visitor who passes a challenge can access the site without being challenged again. Setting this value too low can frustrate legitimate users with excessive security challenges, while setting it too high reduces security effectiveness. The default value is 30 minutes."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_development_mode_disabled",
+    "CheckTitle": "Development mode is disabled for production zones",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Development Mode** configuration by checking if it is disabled to ensure **caching**, **security features**, and **performance optimizations** are active in production environments.",
+    "Risk": "With **Development Mode** enabled, Cloudflare bypasses caching and some optimizations.\n- **Confidentiality**: some security features may be affected or bypassed\n- **Integrity**: performance optimizations are disabled impacting site reliability\n- **Availability**: origin server is exposed to increased load without caching protection",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Caching \u003e Configuration\n3. Scroll to Development Mode\n4. Ensure Development Mode is Off\n5. Note: Development Mode auto-expires after 3 hours if left enabled"
+      },
+      "Recommendation": {
+        "Text": "Disable **Development Mode** for production environments.\n- Use only temporarily during active development when cache bypassing is necessary\n- Development Mode auto-expires after 3 hours\n- Ensure it is manually disabled after development work completes\n- Consider using cache purge or page rules for targeted cache invalidation instead",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_development_mode_disabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/cache/reference/development-mode/"
+    ],
+    "Categories": [
+      "resilience"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Development Mode temporarily suspends Cloudflare caching and minification. It auto-expires after 3 hours to prevent accidental prolonged use."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_dnssec_enabled",
+    "CheckTitle": "DNSSEC is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **DNSSEC** configuration by checking if it is enabled to **cryptographically sign DNS responses** and protect against DNS spoofing and cache poisoning attacks.",
+    "Risk": "Without **DNSSEC**, DNS responses can be spoofed or modified by attackers.\n- **Confidentiality**: users can be redirected to malicious sites that harvest credentials\n- **Integrity**: DNS hijacking enables man-in-the-middle attacks and content modification\n- **Availability**: cache poisoning can cause denial of service by directing traffic to non-existent servers",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable DNSSEC for the zone\nresource \"cloudflare_zone_dnssec\" \"\u003cexample_resource_name\u003e\" {\n  zone_id = \"\u003cZONE_ID\u003e\" # Critical: enables cryptographic signing of DNS responses\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Settings\n3. Scroll to DNSSEC and click Enable DNSSEC\n4. Copy the DS record details provided by Cloudflare\n5. Add the DS record at your domain registrar\n6. Wait for propagation (can take up to 24 hours)"
+      },
+      "Recommendation": {
+        "Text": "Enable **DNSSEC** and ensure **DS records** are properly configured at your domain registrar.\n- DNSSEC provides cryptographic authenticity for DNS responses\n- After enabling in Cloudflare, you must add the DS record at your registrar\n- Use online DNSSEC validators to verify correct configuration",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_dnssec_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/dnssec/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_email_obfuscation_enabled",
+    "CheckTitle": "Email Obfuscation is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Email Obfuscation** (Scrape Shield) configuration by checking if it is enabled to protect email addresses on the website from **automated harvesting** by bots and spammers.",
+    "Risk": "Without **Email Obfuscation**, email addresses displayed on your website can be harvested by bots.\n- **Confidentiality**: harvested emails become targets for spam and phishing campaigns\n- **Integrity**: employees may fall victim to targeted social engineering attacks\n- **Availability**: increased spam volume can overwhelm email systems",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Email Obfuscation to protect against email harvesting\nresource \"cloudflare_zone_settings_override\" \"email_obfuscation\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    email_obfuscation = \"on\" # Critical: hides email addresses from automated scrapers\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Scrape Shield (or Security \u003e Settings in newer UI)\n3. Scroll to Email Address Obfuscation\n4. Toggle the setting to On\n5. Verify that email addresses still work correctly for human visitors"
+      },
+      "Recommendation": {
+        "Text": "Enable **Email Obfuscation** as part of anti-scraping protections.\n- Automatically encodes email addresses to prevent bot harvesting\n- Email addresses remain visible and clickable for human visitors\n- Works with mailto: links and plain text email addresses\n- Part of the Scrape Shield feature set for comprehensive protection",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_email_obfuscation_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/tools/scrape-shield/email-address-obfuscation/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Email Obfuscation automatically hides email addresses from bots while keeping them visible and clickable for human visitors. May not work with JavaScript-rendered email addresses."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_firewall_blocking_rules_configured",
+    "CheckTitle": "Cloudflare Zone Firewall Rules Use Blocking Actions to Protect Against Threats",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **firewall blocking rules** by checking if custom rules use block, challenge, js_challenge, or managed_challenge actions to actively protect against threats rather than only logging.",
+    "Risk": "Firewall rules configured only for **logging** provide visibility but no protection.\n- **Confidentiality**: malicious traffic can access and exfiltrate sensitive data\n- **Integrity**: application exploits can modify data without being blocked\n- **Availability**: credential stuffing and abuse attacks reach the origin unimpeded",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Configure firewall rule with blocking action\nresource \"cloudflare_ruleset\" \"blocking_rule\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"Block malicious requests\"\n  kind    = \"zone\"\n  phase   = \"http_request_firewall_custom\"\n  rules {\n    action      = \"block\" # Actively blocks matching traffic\n    expression  = \"(ip.geoip.country eq \\\"XX\\\")\"\n    description = \"Block traffic from high-risk country\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e WAF \u003e Custom rules\n3. Review existing rules and their actions\n4. Update rules to use blocking actions (Block, Challenge, JS Challenge, Managed Challenge)\n5. Test rules in log mode first, then enable blocking actions"
+      },
+      "Recommendation": {
+        "Text": "Configure **firewall rules** with blocking actions to enforce security policies.\n- Use challenge actions for suspicious traffic to verify human visitors\n- Use block actions for known malicious patterns and high-risk sources\n- Test rules in log mode before enabling blocking to avoid false positives\n- Follow the principle of least privilege in rule configuration",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_firewall_blocking_rules_configured"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/custom-rules/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Blocking actions include: block, challenge, js_challenge, managed_challenge. Log-only rules provide visibility but do not prevent attacks."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_hotlink_protection_enabled",
+    "CheckTitle": "Hotlink Protection is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Hotlink Protection** (Scrape Shield) configuration by checking if it is enabled to prevent other websites from directly linking to **images and media**, consuming bandwidth without authorization.",
+    "Risk": "Without **Hotlink Protection**, external websites can embed your media directly.\n- **Confidentiality**: content may be used without proper attribution or permission\n- **Integrity**: unauthorized use of media may misrepresent your brand\n- **Availability**: bandwidth theft increases costs and may degrade performance",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Hotlink Protection to prevent bandwidth theft\nresource \"cloudflare_zone_settings_override\" \"hotlink_protection\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    hotlink_protection = \"on\" # Blocks unauthorized embedding of your media resources\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Scrape Shield (or Security \u003e Settings in newer UI)\n3. Scroll to Hotlink Protection\n4. Toggle the setting to On\n5. Review allowed referrers if legitimate integrations require access"
+      },
+      "Recommendation": {
+        "Text": "Enable **Hotlink Protection** to prevent unauthorized embedding of your media.\n- Blocks requests to images when HTTP referer does not match your domain\n- Reduces bandwidth costs from unauthorized embedding\n- Review allowed referrers for legitimate integrations\n- Part of the Scrape Shield feature set for comprehensive protection",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_hotlink_protection_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/tools/scrape-shield/hotlink-protection/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Hotlink Protection blocks requests to images when the HTTP referer does not match your domain. May need configuration for legitimate third-party embedding use cases."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_hsts_enabled",
+    "CheckTitle": "HSTS is enabled with recommended max-age and includes subdomains",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **HTTP Strict Transport Security (HSTS)** by checking if it is enabled with a `max-age` of at least **6 months** (15768000 seconds) and **includes subdomains** to instruct browsers to always use HTTPS across the entire domain.",
+    "Risk": "Without **HSTS**, browsers may initially connect over HTTP before redirecting to HTTPS.\n- **Confidentiality**: creates a window for SSL stripping attacks where attackers downgrade connections to unencrypted HTTP\n- **Integrity**: first request can be intercepted and modified before HTTPS redirect\n- **Session hijacking**: cookies and credentials may be captured during initial HTTP request",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable HSTS with recommended settings\nresource \"cloudflare_zone_setting\" \"security_header\" {\n  zone_id    = \"\u003cZONE_ID\u003e\"\n  setting_id = \"security_header\"\n  value = {\n    strict_transport_security = {\n      enabled            = true\n      max_age            = 31536000  # Critical: 1 year in seconds\n      include_subdomains = true      # Recommended: apply to all subdomains\n      preload            = true      # Recommended: submit to browser preload lists\n    }\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to HTTP Strict Transport Security (HSTS)\n4. Click Enable HSTS\n5. Set Max Age Header to at least 6 months\n6. Enable Include subdomains and Preload if appropriate\n7. Acknowledge the warning and click Save"
+      },
+      "Recommendation": {
+        "Text": "Enable **HSTS** with at least a **6-month max-age** (12 months recommended).\n- Verify all resources work over HTTPS before enabling\n- Enable **include_subdomains** to protect all subdomains\n- Consider **HSTS preloading** for maximum protection against SSL stripping attacks\n- Test thoroughly as HSTS cannot be easily disabled once deployed",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_hsts_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/http-strict-transport-security/"
+    ],
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "HSTS requires HTTPS to be properly configured. Ensure all resources are accessible via HTTPS before enabling HSTS with a long max-age."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_https_redirect_enabled",
+    "CheckTitle": "Always Use HTTPS is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Always Use HTTPS** setting by checking if it is enabled to automatically redirect all **HTTP requests to HTTPS**, enforcing encrypted transport for all visitors.",
+    "Risk": "Without **automatic HTTPS redirects**, users may access resources over unencrypted HTTP.\n- **Confidentiality**: traffic can be intercepted and read by attackers on the network path\n- **Integrity**: HTTP responses can be modified in transit (content injection, malware insertion)\n- **Authentication**: session cookies and credentials may be transmitted in plaintext",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable Always Use HTTPS to redirect HTTP to HTTPS\nresource \"cloudflare_zone_setting\" \"always_use_https\" {\n  zone_id    = \"\u003cZONE_ID\u003e\"\n  setting_id = \"always_use_https\"\n  value      = \"on\" # Critical: forces all traffic to use encrypted HTTPS\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to Always Use HTTPS\n4. Toggle the setting to On\n5. Verify that your site works correctly over HTTPS"
+      },
+      "Recommendation": {
+        "Text": "Enable **Always Use HTTPS** to enforce encrypted connections for all visitors.\n- Combine with **HSTS** to prevent SSL stripping attacks\n- Ensure all resources (images, scripts, stylesheets) are served over HTTPS\n- Test for mixed content warnings before enabling",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_https_redirect_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/always-use-https/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_ip_geolocation_enabled",
+    "CheckTitle": "IP Geolocation is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **IP Geolocation** configuration by checking if it is enabled to add the **CF-IPCountry header** to requests, enabling geographic-based access controls, firewall rules, and analytics.",
+    "Risk": "Without **IP Geolocation**, geographic-based security controls cannot be implemented.\n- **Confidentiality**: unable to restrict access from high-risk regions\n- **Integrity**: cannot enforce geographic data residency requirements\n- **Availability**: limited visibility into traffic origins for threat analysis",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable IP Geolocation for geographic-based security controls\nresource \"cloudflare_zone_settings_override\" \"ip_geolocation\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    ip_geolocation = \"on\" # Adds CF-IPCountry header for geo-based controls\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Network\n3. Scroll to IP Geolocation\n4. Toggle the setting to On\n5. Use the CF-IPCountry header in your firewall rules or application logic"
+      },
+      "Recommendation": {
+        "Text": "Enable **IP Geolocation** to support geographic-based security policies.\n- Adds CF-IPCountry header to all requests\n- Enables geo-blocking rules in firewall configuration\n- Provides visibility into traffic origins for threat analysis\n- Essential for geographic data residency compliance",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_ip_geolocation_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/network/ip-geolocation/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "IP Geolocation is essential for implementing geo-blocking or country-specific security rules. The CF-IPCountry header contains ISO 3166-1 Alpha 2 country codes."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_min_tls_version_secure",
+    "CheckTitle": "Minimum TLS version is set to 1.2 or higher",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **minimum TLS version** configuration by checking if the version is set to at least `TLS 1.2` to ensure connections use **secure, modern cryptographic protocols**.",
+    "Risk": "Allowing **legacy TLS versions** (1.0, 1.1) exposes connections to known protocol vulnerabilities.\n- **Confidentiality**: BEAST, POODLE, and weak cipher suites can be exploited for traffic decryption\n- **Compliance**: TLS 1.0/1.1 are deprecated by PCI-DSS, NIST, and major browsers\n- **Integrity**: downgrade attacks can force weaker encryption that is susceptible to tampering",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Set minimum TLS version to 1.2 for secure connections\nresource \"cloudflare_zone_setting\" \"min_tls_version\" {\n  zone_id    = \"\u003cZONE_ID\u003e\"\n  setting_id = \"min_tls_version\"\n  value      = \"1.2\" # Critical: blocks legacy TLS 1.0/1.1 connections\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to Minimum TLS Version\n4. Select TLS 1.2 or TLS 1.3 from the dropdown\n5. Verify that your clients support the selected TLS version"
+      },
+      "Recommendation": {
+        "Text": "Set **minimum TLS version** to `1.2` or higher.\n- **TLS 1.0 and 1.1** are deprecated by all major browsers and contain known vulnerabilities\n- Consider setting to `TLS 1.3` for environments with modern client requirements\n- Test client compatibility before upgrading minimum version",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_min_tls_version_secure"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/minimum-tls/",
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/tls-13/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_rate_limiting_enabled",
+    "CheckTitle": "Rate limiting is configured for the zone",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Rate Limiting** configuration by checking if rules are configured to protect against **DDoS attacks**, **brute force attempts**, and **API abuse**.",
+    "Risk": "Without **Rate Limiting**, applications are vulnerable to volumetric attacks.\n- **Confidentiality**: credential brute forcing can compromise user accounts\n- **Integrity**: API abuse can manipulate data through excessive requests\n- **Availability**: volumetric attacks can exhaust resources causing service degradation",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Configure Rate Limiting to protect against volumetric attacks\nresource \"cloudflare_ruleset\" \"rate_limit\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"Rate limiting\"\n  kind    = \"zone\"\n  phase   = \"http_ratelimit\"\n  rules {\n    action = \"block\"\n    ratelimit {\n      characteristics     = [\"ip.src\"]\n      period              = 60\n      requests_per_period = 100\n      mitigation_timeout  = 600\n    }\n    expression  = \"true\"\n    description = \"Rate limit all requests\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e WAF \u003e Rate limiting rules\n3. Create a new rate limiting rule\n4. Configure thresholds based on expected traffic patterns\n5. Apply stricter limits to sensitive endpoints like authentication and APIs"
+      },
+      "Recommendation": {
+        "Text": "Implement **Rate Limiting** as part of defense in depth.\n- Configure thresholds based on expected traffic patterns\n- Apply stricter limits to sensitive endpoints like authentication and APIs\n- Use different rate limits for different paths or endpoints\n- Monitor rate limiting analytics to fine-tune thresholds",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_rate_limiting_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/rate-limiting-rules/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Rate limiting rules are configured in the http_ratelimit phase. Consider different thresholds for different types of endpoints based on their sensitivity and expected usage patterns."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_record_caa_exists",
+    "CheckTitle": "CAA record exists with issue or issuewild tag",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **CAA (Certificate Authority Authorization)** DNS records by checking if they exist with **`issue` or `issuewild` tags** that specify which **certificate authorities** are permitted to issue SSL/TLS certificates for the domain.",
+    "Risk": "Without **CAA** records or without `issue`/`issuewild` tags, any certificate authority can issue certificates for your domain.\n- **Confidentiality**: unauthorized certificates enable man-in-the-middle attacks\n- **Integrity**: attackers can impersonate your domain with fraudulently obtained certificates\n- **Trust**: CA compromise or social engineering can result in unauthorized certificate issuance\n- **Missing tags**: CAA records without `issue` or `issuewild` tags (e.g., only `iodef`) do not restrict certificate issuance",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Create CAA record to restrict certificate issuance\nresource \"cloudflare_record\" \"caa_issue\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"@\"\n  type    = \"CAA\"\n  data {\n    flags = \"0\"\n    tag   = \"issue\"                # Restricts which CAs can issue regular certificates\n    value = \"letsencrypt.org\"      # Specify your authorized certificate authority\n  }\n}\n\n# Create CAA record to restrict wildcard certificate issuance\nresource \"cloudflare_record\" \"caa_issuewild\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"@\"\n  type    = \"CAA\"\n  data {\n    flags = \"0\"\n    tag   = \"issuewild\"            # Restricts which CAs can issue wildcard certificates\n    value = \"letsencrypt.org\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Click Add record\n4. Select CAA as the record type\n5. Enter @ for the Name field\n6. Set flags to 0, tag to issue, and value to your authorized CA (e.g., letsencrypt.org)\n7. Click Save\n8. Optionally add issuewild records to control wildcard certificate issuance"
+      },
+      "Recommendation": {
+        "Text": "Add **CAA records** with `issue` or `issuewild` tags specifying authorized certificate authorities.\n- `issue` tag: authorizes CAs for regular (non-wildcard) certificates\n- `issuewild` tag: authorizes CAs for wildcard certificates specifically\n- Use `issue \";\"` to block all certificate issuance (for domains that should never have certificates)\n- Use `iodef` tag to receive reports of policy violations (optional, for monitoring)\n- All CAs are required to check CAA records before issuing certificates",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_record_caa_exists"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/caa-records/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "CAA records help prevent unauthorized SSL/TLS certificate issuance. This check verifies both existence and that the record contains issue or issuewild tags. Records with only iodef tag will fail this check."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_record_dkim_exists",
+    "CheckTitle": "DKIM record exists with valid public key",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **DKIM (DomainKeys Identified Mail)** records by checking if TXT records exist at `*._domainkey` subdomains containing a **cryptographically valid public key** in the `p=` parameter used to **verify email signatures**.",
+    "Risk": "Without **DKIM** or with a revoked/empty public key, email recipients cannot verify that messages were sent by authorized servers.\n- **Confidentiality**: attackers can forge emails appearing to come from your domain\n- **Integrity**: no cryptographic proof that email content hasn't been modified in transit\n- **Reputation**: DMARC policies relying on DKIM will fail, affecting email deliverability\n- **Revoked keys**: A DKIM record with `p=` empty (e.g., `p=;`) indicates a revoked key that cannot authenticate emails",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Create DKIM record for email authentication\nresource \"cloudflare_record\" \"dkim\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"google._domainkey\"  # Selector varies by email provider\n  type    = \"TXT\"\n  content = \"v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4...\" # Must contain valid public key\n  ttl     = 3600\n}\n```",
+        "CLI": "",
+        "Other": "1. Generate DKIM keys using your email provider or mail server\n2. Log in to the Cloudflare dashboard and select your account and domain\n3. Go to DNS \u003e Records\n4. Click Add record\n5. Select TXT as the record type\n6. Enter selector._domainkey for the Name field (e.g., google._domainkey)\n7. Enter the DKIM public key record provided by your email service (must include p= with actual key)\n8. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Configure **DKIM records** with valid public keys from your email provider.\n- Each email service requires its own DKIM selector (e.g., google._domainkey for Google Workspace)\n- The `p=` parameter must contain the actual public key, not be empty\n- An empty `p=` value indicates a revoked key and will fail this check\n- DKIM works alongside SPF and DMARC for comprehensive email authentication\n- Rotate DKIM keys periodically for enhanced security\n- Use 2048-bit keys for stronger cryptographic protection",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_record_dkim_exists"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/email-records/"
+    ],
+    "Categories": [
+      "email-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "DKIM records are TXT records at *._domainkey subdomains starting with 'v=DKIM1'. This check uses cryptographic validation to verify that the p= parameter contains a real DER-encoded public key, not just non-empty Base64. Revoked keys, invalid Base64, or malformed keys will fail this check."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_record_dmarc_exists",
+    "CheckTitle": "DMARC record exists with enforcement policy (p=reject or p=quarantine)",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **DMARC (Domain-based Message Authentication, Reporting, and Conformance)** records by checking if a TXT record exists at `_dmarc` subdomain with an **enforcement policy (`p=reject` or `p=quarantine`)** to actively block or quarantine spoofed emails.",
+    "Risk": "Without **DMARC** or with a monitoring-only policy (`p=none`), there is no active protection against email spoofing.\n- **Confidentiality**: attackers can spoof emails for phishing campaigns to steal credentials\n- **Integrity**: no visibility into email authentication failures or abuse attempts\n- **Reputation**: domain reputation damage from spoofed emails sent in your name\n- **Monitoring-only policy**: `p=none` only generates reports but does not block or quarantine spoofed emails, providing no real protection",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Create DMARC record with enforcement policy\nresource \"cloudflare_record\" \"dmarc\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"_dmarc\"\n  type    = \"TXT\"\n  content = \"v=DMARC1; p=reject; rua=mailto:dmarc@example.com\" # Use p=reject or p=quarantine for enforcement\n  ttl     = 3600\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Click Add record\n4. Select TXT as the record type\n5. Enter _dmarc for the Name field\n6. Enter your DMARC policy with enforcement (e.g., v=DMARC1; p=reject; rua=mailto:dmarc@example.com)\n7. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Implement **DMARC** with an enforcement policy (`p=reject` or `p=quarantine`).\n- `p=reject`: receiving servers should reject emails that fail authentication\n- `p=quarantine`: receiving servers should send suspicious emails to spam folder\n- `p=none`: only monitoring, provides no protection (will fail this check)\n- Ensure SPF and DKIM are properly configured before enabling enforcement\n- Configure `rua` to receive aggregate reports on authentication results\n- Use `pct` parameter to gradually roll out enforcement (e.g., `pct=10` for 10% of emails)",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_record_dmarc_exists"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/email-records/"
+    ],
+    "Categories": [
+      "email-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "DMARC records are TXT records at _dmarc subdomain starting with 'v=DMARC1'. This check verifies both existence and enforcement policy (p=reject or p=quarantine). Monitoring-only policy (p=none) will fail this check."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_record_spf_exists",
+    "CheckTitle": "SPF record exists with strict policy (-all)",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **SPF (Sender Policy Framework)** records by checking if a TXT record exists that specifies which mail servers are **authorized to send email** on behalf of the domain, and verifies that the record uses a **strict policy (`-all`)** to reject unauthorized senders.",
+    "Risk": "Without **SPF** or with a permissive policy (`~all`, `?all`, `+all`), attackers can forge emails appearing to come from your domain.\n- **Confidentiality**: phishing attacks can harvest sensitive information from recipients who trust spoofed emails\n- **Integrity**: brand reputation damage from fraudulent emails sent in your name\n- **Availability**: email deliverability issues as receiving servers may reject or quarantine legitimate emails\n- **Permissive policies**: `~all` (softfail) only marks emails as suspicious but does not reject them, `?all` (neutral) provides no protection",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Create SPF record for email authentication with strict policy\nresource \"cloudflare_record\" \"spf\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"@\"\n  type    = \"TXT\"\n  content = \"v=spf1 include:_spf.google.com -all\" # Use -all for strict enforcement\n  ttl     = 3600\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to DNS \u003e Records\n3. Click Add record\n4. Select TXT as the record type\n5. Enter @ for the Name field\n6. Enter your SPF record with strict policy (e.g., v=spf1 include:_spf.google.com -all)\n7. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Configure **SPF records** with strict policy (`-all`) listing authorized mail servers.\n- SPF records start with `v=spf1` and define authorized senders\n- Use `-all` (hardfail) to reject emails from unauthorized servers\n- Avoid `~all` (softfail) in production as it only marks suspicious emails but does not reject them\n- Use `include:` to authorize third-party mail services\n- Combine with **DKIM** and **DMARC** for comprehensive email authentication\n- Test SPF records using online validators before deployment",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_record_spf_exists"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/dns/manage-dns-records/how-to/email-records/"
+    ],
+    "Categories": [
+      "email-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "SPF records start with 'v=spf1' and define authorized mail servers. This check verifies both existence and strict policy (-all). Permissive policies like ~all (softfail) or ?all (neutral) will fail this check."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_security_under_attack_disabled",
+    "CheckTitle": "Under Attack Mode is disabled during normal operations",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Under Attack Mode** configuration by checking if it is disabled during normal operations, as this mode performs additional security checks including an **interstitial JavaScript challenge page** that significantly impacts user experience.",
+    "Risk": "Keeping **Under Attack Mode** permanently enabled causes operational issues.\n- **Availability**: all visitors face a 5-second interstitial challenge page before accessing the site\n- **Accessibility**: visitors without JavaScript support cannot access the site at all\n- **User Experience**: legitimate users experience unnecessary delays and third-party analytics show degraded performance",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Set security level to high instead of under_attack\nresource \"cloudflare_zone_settings_override\" \"security_settings\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    security_level = \"high\" # Use high instead of under_attack for normal operations\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e Settings\n3. Under 'Under Attack Mode', toggle it OFF\n4. Consider setting Security Level to 'High' for continued protection without the interstitial"
+      },
+      "Recommendation": {
+        "Text": "Disable **Under Attack Mode** when not actively under a DDoS attack.\n- Use it only as a **last resort** during active layer 7 DDoS attacks\n- For ongoing protection, use **Security Level** settings (Low, Medium, High)\n- Configure specific **WAF rules** for targeted protection without impacting all users",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_security_under_attack_disabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/fundamentals/reference/under-attack-mode/",
+      "https://developers.cloudflare.com/waf/tools/security-level/"
+    ],
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Under Attack Mode is designed as a temporary measure during active attacks. The interstitial challenge page validates visitors using JavaScript, blocking automated attacks while allowing legitimate users through after a brief delay."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_ssl_strict",
+    "CheckTitle": "SSL/TLS encryption mode is set to Full (Strict)",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **SSL/TLS encryption mode** by checking if the mode is set to `Full (Strict)` to ensure **end-to-end encryption** with certificate validation.",
+    "Risk": "Without **strict SSL mode**, traffic between Cloudflare and origin may use unvalidated or unencrypted connections.\n- **Confidentiality**: sensitive data can be intercepted in transit via man-in-the-middle attacks\n- **Integrity**: responses can be modified without detection between Cloudflare and origin\n- **Compliance**: may violate PCI-DSS, HIPAA, and other regulatory requirements for encrypted transport",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Set SSL/TLS mode to Full (Strict) for end-to-end encryption\nresource \"cloudflare_zone_setting\" \"ssl\" {\n  zone_id    = \"\u003cZONE_ID\u003e\"\n  setting_id = \"ssl\"\n  value      = \"strict\" # Critical: ensures certificate validation between Cloudflare and origin\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Overview\n3. Under SSL/TLS encryption mode, select Full (strict)\n4. Ensure your origin server has a valid SSL certificate installed (Cloudflare Origin CA or publicly trusted CA)"
+      },
+      "Recommendation": {
+        "Text": "Configure **SSL/TLS mode** to `Full (Strict)` and install a valid certificate on your origin server.\n- Use **Cloudflare Origin CA certificates** for seamless integration\n- Ensure origin server presents a valid certificate matching your domain\n- Enable **Authenticated Origin Pulls** for additional security",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_ssl_strict"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/origin-configuration/ssl-modes/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_tls_1_3_enabled",
+    "CheckTitle": "TLS 1.3 is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **TLS 1.3** configuration by checking if it is enabled to benefit from **improved security** through simplified cipher suites and **faster handshakes** with zero round-trip time resumption.",
+    "Risk": "Without **TLS 1.3**, connections use older TLS versions with less secure characteristics.\n- **Confidentiality**: legacy TLS versions have more complex cipher negotiations that may expose weaknesses\n- **Integrity**: older protocols lack protection against downgrade attacks that TLS 1.3 provides\n- **Performance**: slower handshakes impact user experience and increase latency",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable TLS 1.3 for improved security and performance\nresource \"cloudflare_zone_settings_override\" \"tls_settings\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    tls_1_3 = \"on\" # Critical: enables most secure TLS version with faster handshakes\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to TLS 1.3\n4. Toggle the setting to On\n5. Verify that your clients support TLS 1.3 (all modern browsers do)"
+      },
+      "Recommendation": {
+        "Text": "Enable **TLS 1.3** to provide the most secure and efficient TLS connections.\n- All modern browsers support TLS 1.3 ensuring broad compatibility\n- TLS 1.3 removes obsolete cryptographic algorithms\n- Zero round-trip time (0-RTT) resumption improves performance\n- Combine with minimum TLS version set to 1.2 or higher",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_tls_1_3_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/additional-options/tls-13/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "TLS 1.3 is enabled by default on Cloudflare but should be verified. It provides security improvements and performance benefits through simplified handshakes."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_universal_ssl_enabled",
+    "CheckTitle": "Universal SSL is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Universal SSL** configuration by checking if it is enabled to provide **free SSL/TLS certificates** for the domain and its subdomains, enabling secure HTTPS connections.",
+    "Risk": "Without **Universal SSL**, visitors cannot establish HTTPS connections to your site.\n- **Confidentiality**: all traffic is unencrypted and vulnerable to interception and eavesdropping\n- **Integrity**: HTTP responses can be modified in transit by attackers (content injection, malware)\n- **Trust**: browsers display security warnings degrading user trust and experience",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Note: Universal SSL is enabled by default on Cloudflare\n# To explicitly manage SSL settings, use zone_settings_override\nresource \"cloudflare_zone_settings_override\" \"ssl_settings\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  settings {\n    ssl = \"full\" # Critical: enables SSL/TLS encryption\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to SSL/TLS \u003e Edge Certificates\n3. Scroll to Universal SSL\n4. Ensure the status shows Active\n5. If disabled, click Enable Universal SSL\n6. Wait for certificate issuance (typically within 24 hours for new domains)"
+      },
+      "Recommendation": {
+        "Text": "Enable **Universal SSL** to provide HTTPS capability for your domain.\n- Universal SSL is the foundation for transport security\n- Required before implementing HSTS or other HTTPS-dependent features\n- Cloudflare automatically renews certificates before expiration\n- Consider upgrading to Advanced Certificate Manager for additional control",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_universal_ssl_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/ssl/edge-certificates/universal-ssl/"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Universal SSL is enabled by default for all Cloudflare zones. If it was previously disabled, re-enabling may take up to 24 hours for certificate issuance."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_waf_enabled",
+    "CheckTitle": "WAF is enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **Web Application Firewall (WAF)** configuration by checking if it is enabled to protect against common web vulnerabilities including **SQL injection**, **XSS**, and **OWASP Top 10** threats.",
+    "Risk": "Without **WAF**, web applications are exposed to common attack vectors.\n- **Confidentiality**: SQL injection attacks can exfiltrate sensitive database contents\n- **Integrity**: XSS attacks can modify page content and steal session tokens\n- **Availability**: application-layer attacks can cause service disruption",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable WAF managed rulesets for comprehensive protection\nresource \"cloudflare_ruleset\" \"waf_managed\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"WAF Managed Rules\"\n  kind    = \"zone\"\n  phase   = \"http_request_firewall_managed\"\n  rules {\n    action = \"execute\"\n    action_parameters {\n      id = \"efb7b8c949ac4650a09736fc376e9aee\" # Cloudflare Managed Ruleset\n    }\n    expression  = \"true\"\n    description = \"Execute Cloudflare Managed Ruleset\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e WAF\n3. Enable managed rulesets (OWASP, Cloudflare Managed Ruleset)\n4. Configure custom rules based on your application's specific threat model\n5. Monitor WAF analytics to tune rules and reduce false positives"
+      },
+      "Recommendation": {
+        "Text": "Enable **WAF** as a critical layer of defense for web applications.\n- Deploy managed rulesets for protection against OWASP Top 10 vulnerabilities\n- Create custom rules based on your application's specific threat model\n- Monitor WAF analytics to tune rules and reduce false positives\n- Combine with rate limiting and bot protection for comprehensive security",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_waf_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/"
+    ],
+    "Categories": [
+      "vulnerabilities"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "WAF is available on Pro, Business, and Enterprise plans. Configure managed rulesets and create custom rules to match your application's specific security requirements."
+  },
+  {
+    "Provider": "cloudflare",
+    "CheckID": "zone_waf_owasp_ruleset_enabled",
+    "CheckTitle": "Cloudflare Zone OWASP Managed WAF Rulesets Are Enabled",
+    "CheckType": [],
+    "ServiceName": "zone",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Zone",
+    "ResourceGroup": "network",
+    "Description": "**Cloudflare zones** are assessed for **OWASP managed rulesets** by checking if they are enabled to protect against common web application vulnerabilities including **SQL injection**, **XSS**, and other **OWASP Top 10** threats.",
+    "Risk": "Without **OWASP managed rulesets**, web applications are exposed to well-known attack vectors.\n- **Confidentiality**: SQL injection attacks can exfiltrate sensitive database contents\n- **Integrity**: XSS attacks can modify page content and steal session tokens\n- **Availability**: remote code execution can compromise server availability",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable OWASP managed WAF rulesets\nresource \"cloudflare_ruleset\" \"waf_owasp\" {\n  zone_id = \"\u003cZONE_ID\u003e\"\n  name    = \"OWASP Managed Rules\"\n  kind    = \"zone\"\n  phase   = \"http_request_firewall_managed\"\n  rules {\n    action = \"execute\"\n    action_parameters {\n      id = \"4814384a9e5d4991b9815dcfc25d2f1f\" # Cloudflare OWASP Core Ruleset\n    }\n    expression  = \"true\"\n    description = \"Execute Cloudflare OWASP Core Ruleset\"\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. Log in to the Cloudflare dashboard and select your account and domain\n2. Go to Security \u003e WAF \u003e Managed rules\n3. Enable the Cloudflare OWASP Core Ruleset\n4. Review and configure rule sensitivity based on your application\n5. Monitor WAF analytics to tune rules and reduce false positives"
+      },
+      "Recommendation": {
+        "Text": "Enable **OWASP Core Ruleset** managed rules as part of a defense in depth strategy.\n- Protects against OWASP Top 10 vulnerabilities including SQLi and XSS\n- Regularly review and tune rule sensitivity based on application requirements\n- Monitor WAF analytics to identify and address false positives\n- Combine with custom rules for application-specific protection",
+        "Url": "https://hub.prowler.com/checks/cloudflare/zone_waf_owasp_ruleset_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://developers.cloudflare.com/waf/managed-rules/"
+    ],
+    "Categories": [
+      "vulnerabilities"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "OWASP managed rulesets are available on Pro, Business, and Enterprise plans. The Cloudflare OWASP Core Ruleset provides protection against common web application vulnerabilities."
+  }
+]

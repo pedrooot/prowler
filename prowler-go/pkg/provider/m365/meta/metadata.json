@@ -1,0 +1,2395 @@
+[
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_external_calendar_sharing_disabled",
+    "CheckTitle": "Ensure external sharing of calendars is disabled",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Sharing Policy",
+    "ResourceGroup": "governance",
+    "Description": "Restrict the ability for users to share their calendars externally in Microsoft 365. This prevents users from sending calendar sharing links to external recipients, reducing information exposure.",
+    "Risk": "Allowing calendar sharing outside the organization can help attackers build knowledge of personnel availability, relationships, and activity patterns, aiding social engineering or targeted attacks.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/admin/manage/share-calendars-with-external-users?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SharingPolicy -Identity \"Default Sharing Policy\" -Enabled $False",
+        "Other": "1. Navigate to https://admin.microsoft.com. 2. Click Settings \u003e Org settings. 3. Select Calendar in the Services section. 4. Uncheck 'Let your users share their calendars with people outside of your organization who have Office 365 or Exchange'. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Disable external calendar sharing by setting the Default Sharing Policy to disabled.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/admin/manage/share-calendars-with-external-users?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_groups_not_public_visibility",
+    "CheckTitle": "Ensure that only organizationally managed/approved public groups exist",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Active teams \u0026 groups",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that only organizationally managed and approved public groups exist to prevent unauthorized access to sensitive group resources like SharePoint, Teams, or other shared assets.",
+    "Risk": "Unmanaged public groups can allow unauthorized access to organizational resources, posing a risk of data leakage or misuse through easily guessable SharePoint URLs or self-adding to groups via the Azure portal.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/admin/create-groups/manage-groups?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft 365 admin center https://admin.microsoft.com. 2. Click to expand Teams \u0026 groups select Active teams \u0026 groups. 3. On the Active teams and groups page, select the group's name that is public. 4. On the popup groups name page, select Settings. 5. Under Privacy, select Private."
+      },
+      "Recommendation": {
+        "Text": "Review and adjust the privacy settings of Microsoft 365 Groups to ensure only organizationally managed and approved public groups exist.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/security/office-365-security/microsoft-365-groups-governance"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_organization_customer_lockbox_enabled",
+    "CheckTitle": "Ensure that customer lockbox is enabled for the organization",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Organization Configuration",
+    "ResourceGroup": "collaboration",
+    "Description": "Customer Lockbox ensures that Microsoft support engineers cannot access content in your tenant to perform a service operation without explicit approval. This feature provides an additional layer of control and transparency over data access requests.",
+    "Risk": "If Customer Lockbox is not enabled, Microsoft support personnel can access your organization's data for troubleshooting without explicit approval, potentially increasing the risk of unauthorized access or data exfiltration.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/azure/security/fundamentals/customer-lockbox-overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-OrganizationConfig -CustomerLockBoxEnabled $true",
+        "Other": "1. Navigate to Microsoft 365 admin center https://admin.microsoft.com. 2. Click Settings \u003e Org settings. 3. Select the Security \u0026 privacy tab. 4. Click Customer lockbox. 5. Check the box 'Require approval for all data access requests'. 6. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Enable the Customer Lockbox feature to ensure explicit approval is required before Microsoft engineers can access your data during support operations.",
+        "Url": "https://learn.microsoft.com/en-us/azure/security/fundamentals/customer-lockbox-overview"
+      }
+    },
+    "Categories": [
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_settings_password_never_expire",
+    "CheckTitle": "Ensure the 'Password expiration policy' is set to 'Set passwords to never expire (recommended)'",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Security \u0026 privacy settings",
+    "ResourceGroup": "security",
+    "Description": "This control ensures that the password expiration policy is set to 'Set passwords to never expire (recommended)'. This aligns with modern recommendations to enhance security by avoiding arbitrary password changes and focusing on supplementary controls like MFA.",
+    "Risk": "Arbitrary password expiration policies can lead to weaker passwords due to frequent changes. Users may adopt insecure habits such as using simple, memorable passwords.",
+    "RelatedUrl": "https://www.cisecurity.org/insights/white-papers/cis-password-policy-guide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-MsolUser -UserPrincipalName \u003cuser\u003e -PasswordNeverExpires $true",
+        "Other": "1. Navigate to Microsoft 365 admin center https://admin.microsoft.com. 2. Click to expand Settings select Org Settings. 3. Click on Security \u0026 privacy. 4. Check the Set passwords to never expire (recommended) box. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Enable the 'Never Expire Passwords' option in Microsoft 365 Admin Center.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/admin/misc/password-policy-recommendations?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_users_admins_reduced_license_footprint",
+    "CheckTitle": "Ensure administrative accounts use licenses with a reduced application footprint",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Active users",
+    "ResourceGroup": "IAM",
+    "Description": "Administrative accounts must use licenses with a reduced application footprint, such as Microsoft Entra ID P1 or P2, or avoid licenses entirely when possible. This minimizes the attack surface associated with privileged identities.",
+    "Risk": "Licensing administrative accounts with applications like email or collaborative tools increases their exposure to social engineering attacks and malicious content, putting privileged accounts at risk.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/enterprise/protect-your-global-administrator-accounts?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft 365 admin center https://admin.microsoft.com. 2. Click to expand Users select Active users. 3. Click Add a user. 4. Fill out the appropriate fields for Name, user, etc. 5. When prompted to assign licenses select as needed Microsoft Entra ID P1 or Microsoft Entra ID P2, then click Next. 6. Under the Option settings screen you may choose from several types of privileged roles. Choose Admin center access followed by the appropriate role then click Next. 7. Select Finish adding."
+      },
+      "Recommendation": {
+        "Text": "Assign Microsoft Entra ID P1 or P2 licenses to administrative accounts to participate in essential security services without enabling access to vulnerable applications.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/admin/add-users/add-users?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "admincenter_users_between_two_and_four_global_admins",
+    "CheckTitle": "Ensure that between two and four global admins are designated",
+    "CheckType": [],
+    "ServiceName": "admincenter",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Active users",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that there are between two and four global administrators designated in your tenant. This ensures monitoring, redundancy, and reduces the risk associated with having too many privileged accounts.",
+    "Risk": "Having only one global administrator increases the risk of unmonitored actions and operational disruptions if that administrator is unavailable. Having more than four increases the likelihood of a breach through one of these highly privileged accounts.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/best-practices#5-limit-the-number-of-global-administrators-to-less-than-5",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft 365 admin center https://admin.microsoft.com 2. Select Users \u003e Active Users. 3. In the Search field enter the name of the user to be made a Global Administrator. 4. To create a new Global Admin: 1. Select the user's name. 2. A window will appear to the right. 3. Select Manage roles. 4. Select Admin center access. 5. Check Global Administrator. 6. Click Save changes. 5. To remove Global Admins: 1. Select User. 2. Under Roles select Manage roles. 3. De-Select the appropriate role. 4. Click Save changes."
+      },
+      "Recommendation": {
+        "Text": "Review the number of global administrators in your tenant. Add or remove global admins as necessary to ensure compliance with the recommended range of two to four.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/manage-roles-portal"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antiphishing_policy_configured",
+    "CheckTitle": "Ensure anti-phishing policies are properly configured and active.",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Defender Anti-Phishing Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure that anti-phishing policies are created and configured for specific users, groups, or domains, taking precedence over the default policy. This check verifies the existence of rules within policies and validates specific policy settings such as spoof intelligence, DMARC actions, safety tips, and unauthenticated sender actions.",
+    "Risk": "Without anti-phishing policies, organizations may rely solely on default settings, which might not adequately protect against phishing attacks targeted at specific users, groups, or domains. This increases the risk of successful phishing attempts and potential data breaches.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/security/office-365-security/set-up-anti-phishing-policies?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$params = @{Name='\u003cpolicy_name\u003e';PhishThresholdLevel=3;EnableTargetedUserProtection=$true;EnableOrganizationDomainsProtection=$true;EnableMailboxIntelligence=$true;EnableMailboxIntelligenceProtection=$true;EnableSpoofIntelligence=$true;TargetedUserProtectionAction='Quarantine';TargetedDomainProtectionAction='Quarantine';MailboxIntelligenceProtectionAction='Quarantine';TargetedUserQuarantineTag='DefaultFullAccessWithNotificationPolicy';MailboxIntelligenceQuarantineTag='DefaultFullAccessWithNotificationPolicy';TargetedDomainQuarantineTag='DefaultFullAccessWithNotificationPolicy';EnableFirstContactSafetyTips=$true;EnableSimilarUsersSafetyTips=$true;EnableSimilarDomainsSafetyTips=$true;EnableUnusualCharactersSafetyTips=$true;HonorDmarcPolicy=$true}; New-AntiPhishPolicy @params; New-AntiPhishRule -Name $params.Name -AntiPhishPolicy $params.Name -RecipientDomainIs (Get-AcceptedDomain).Name -Priority 0",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules. 3. On the Policies \u0026 rules page select Threat policies. 4. Under Policies, select Anti-phishing 5. Ensure policies have rules with the state set to 'on' and validate settings: spoof intelligence enabled, spoof intelligence action set to 'Quarantine', DMARC reject and quarantine actions, safety tips enabled, unauthenticated sender action enabled, show tag enabled, and honor DMARC policy enabled. If not, modify them to be as recommended."
+      },
+      "Recommendation": {
+        "Text": "Create and configure anti-phishing policies for specific users, groups, or domains to enhance protection against phishing attacks.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/security/office-365-security/set-up-anti-phishing-policies?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antispam_connection_filter_policy_empty_ip_allowlist",
+    "CheckTitle": "Ensure the Anti-Spam Connection Filter Policy IP Allowlist is empty or undefined.",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Defender Anti-Spam Policy",
+    "ResourceGroup": "security",
+    "Description": "This check focuses on Microsoft 365 organizations with Exchange Online mailboxes or standalone Exchange Online Protection (EOP) organizations. It ensures that the connection filter policy's IP Allowlist is empty or undefined to prevent bypassing spam filtering and sender authentication checks, which could lead to successful delivery of malicious emails.",
+    "Risk": "Using the IP Allowlist without additional verification like mail flow rules poses a risk, as emails from these sources skip essential security checks (SPF, DKIM, DMARC). This could allow attackers to deliver harmful emails directly to the Inbox.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-HostedConnectionFilterPolicy -Identity Default -IPAllowList @{}",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules. 3. On the Policies \u0026 rules page select Threat policies. 4. Under Policies, select Anti-spam and click on the Connection filter policy (Default). 5. Remove IP entries from the allow list. 6. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Ensure that the IP Allowlist in your connection filter policy is empty or undefined to prevent bypassing essential security checks.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-hostedconnectionfilterpolicy?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antispam_connection_filter_policy_safe_list_off",
+    "CheckTitle": "Ensure the default connection filter policy has the SafeList setting disabled",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Defender Anti-Spam Policy",
+    "ResourceGroup": "security",
+    "Description": "This check ensures that the EnableSafeList setting in the default connection filter policy is set to False. The safe list, managed dynamically by Microsoft, allows emails from listed IPs to bypass spam filtering and sender authentication checks, posing a security risk.",
+    "Risk": "If the safe list is enabled, emails from IPs on this list can bypass essential security checks (SPF, DKIM, DMARC), potentially allowing malicious emails to be delivered directly to users' inboxes.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/connection-filter-policies-configure",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-HostedConnectionFilterPolicy -Identity Default -EnableSafeList $false",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules. 3. On the Policies \u0026 rules page select Threat policies. 4. Under Policies, select Anti-spam and click on the Connection filter policy (Default). 5. Disable the safe list option. 6. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Ensure that the EnableSafeList setting in your connection filter policy is set to False to prevent bypassing essential security checks.",
+        "Url": "https://learn.microsoft.com/en-us/defender-office-365/create-safe-sender-lists-in-office-365#use-the-ip-allow-list"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antispam_outbound_policy_configured",
+    "CheckTitle": "Ensure Defender Outbound Spam Policies are set to notify administrators.",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Defender Anti-Spam Outbound Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure that outbound anti-spam policies are configured to notify administrators and copy suspicious outbound messages to designated recipients when a sender is blocked for sending spam emails.",
+    "Risk": "Without outbound spam notifications and message copies, compromised accounts may go undetected, increasing the risk of reputation damage or data leakage through unauthorized email activity.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/outbound-spam-protection-about",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$BccEmailAddress = @(\"\u003cINSERT-EMAIL\u003e\")\n$NotifyEmailAddress = @(\"\u003cINSERT-EMAIL\u003e\")\nSet-HostedOutboundSpamFilterPolicy -Identity Default -BccSuspiciousOutboundAdditionalRecipients $BccEmailAddress -BccSuspiciousOutboundMail $true -NotifyOutboundSpam $true -NotifyOutboundSpamRecipients $NotifyEmailAddress",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules \u003e Threat policies. 3. Under Policies, select Anti-spam. 4. Click on the Anti-spam outbound policy (default). 5. Select Edit protection settings then under Notifications: 6. Check 'Send a copy of suspicious outbound messages or message that exceed these limits to these users and groups' and enter the email addresses. 7. Check 'Notify these users and groups if a sender is blocked due to sending outbound spam' and enter the desired email addresses. 8. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Configure Defender outbound spam filter policies to notify administrators and copy suspicious outbound messages when users are blocked for sending spam.",
+        "Url": "https://learn.microsoft.com/en-us/defender-office-365/outbound-spam-protection-about"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure settings are applied to the highest priority policy if custom policies exist. Default values do not notify or copy outbound spam messages by default."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antispam_outbound_policy_forwarding_disabled",
+    "CheckTitle": "Ensure Defender Outbound Spam Policies are set to disable mail forwarding.",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Defender Anti-Spam Outbound Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure Defender Outbound Spam Policies are set to disable mail forwarding.",
+    "Risk": "Enabling email auto-forwarding can be exploited by attackers or malicious insiders to exfiltrate sensitive data outside the organization, often without detection.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/outbound-spam-protection-about",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-HostedOutboundSpamFilterPolicy -Identity {policyName} -AutoForwardingMode Off",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com/. 2. Expand E-mail \u0026 collaboration then select Policies \u0026 rules. 3. Select Threat policies \u003e Anti-spam. 4. Select Anti-spam outbound policy (default). 5. Click Edit protection settings. 6. Set Automatic forwarding rules dropdown to Off - Forwarding is disabled and click Save. 7. Repeat steps 4-6 for any additional higher priority, custom policies."
+      },
+      "Recommendation": {
+        "Text": "Block all forms of mail forwarding using Anti-spam outbound policies in Exchange Online. Apply exclusions only where justified by organizational policy.",
+        "Url": "https://learn.microsoft.com/en-us/defender-office-365/outbound-spam-protection-about"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure settings are applied to the highest priority policy if custom policies exist."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_antispam_policy_inbound_no_allowed_domains",
+    "CheckTitle": "Ensure inbound anti-spam policies do not contain allowed domains",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "Defender Anti-Spam Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure that inbound anti-spam policies do not have any domains listed in the AllowedSenderDomains. Messages from these domains bypass most email protections, increasing the risk of successful phishing attacks.",
+    "Risk": "Having domains in the AllowedSenderDomains list allows emails from these domains to bypass essential security checks, increasing the risk of phishing attacks and other malicious activities.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/anti-spam-protection-about#allow-and-block-lists-in-anti-spam-policies",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-HostedContentFilterPolicy -Identity \u003cPolicy name\u003e -AllowedSenderDomains @{}",
+        "Other": "1. Navigate to Microsoft 365 Defender (https://security.microsoft.com). 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules \u003e Threat policies. 3. Under Policies, select Anti-spam. 4. Open each out-of-compliance inbound anti-spam policy by clicking on it. 5. Click Edit allowed and blocked senders and domains. 6. Select Allow domains. 7. Delete each domain from the domains list. 8. Click Done \u003e Save. 9. Repeat as needed."
+      },
+      "Recommendation": {
+        "Text": "Ensure that the AllowedSenderDomains list in your inbound anti-spam policies is empty to prevent bypassing essential security checks.",
+        "Url": "https://learn.microsoft.com/en-us/microsoft-365/security/office-365-security/configure-the-allowed-sender-domains?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_chat_report_policy_configured",
+    "CheckTitle": "Ensure chat report submission policy is properly configured in Defender",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Defender Report Submission Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure Defender report submission policy is properly configured to use customized addresses and enable chat message reporting to customized addresses, while disabling report chat message to Microsoft.",
+    "Risk": "If Defender report submission policy is not properly configured, reported messages from Teams may not be handled or routed correctly, reducing the organization's ability to respond to threats.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/submissions-teams?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-ReportSubmissionPolicy -Identity DefaultReportSubmissionPolicy -EnableReportToMicrosoft $false -ReportChatMessageEnabled $false -ReportChatMessageToCustomizedAddressEnabled $true -ReportJunkToCustomizedAddress $true -ReportNotJunkToCustomizedAddress $true -ReportPhishToCustomizedAddress $true -ReportJunkAddresses $usersub -ReportNotJunkAddresses $usersub -ReportPhishAddresses $usersub",
+        "Other": "1. Navigate to Microsoft 365 Defender (https://security.microsoft.com/). 2. Click on Settings \u003e Email \u0026 collaboration \u003e User reported settings. 3. Scroll to Microsoft Teams section. 4. Ensure Monitor reported messages in Microsoft Teams is checked. 5. Ensure Send reported messages to: is set to My reporting mailbox only with report email addresses defined for authorized staff."
+      },
+      "Recommendation": {
+        "Text": "Configure Defender report submission policy to use customized addresses and enable chat message reporting to customized addresses, while disabling report chat message to Microsoft.",
+        "Url": "https://learn.microsoft.com/en-us/defender-office-365/submissions-teams?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_domain_dkim_enabled",
+    "CheckTitle": "Ensure that DKIM is enabled for all Exchange Online Domains",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Online Domain",
+    "ResourceGroup": "collaboration",
+    "Description": "This check ensures that DomainKeys Identified Mail (DKIM) is enabled for all Exchange Online domains. DKIM is a crucial authentication method that, along with SPF and DMARC, helps prevent attackers from sending spoofed emails that appear to originate from your domain. By adding a digital signature to outbound emails, DKIM allows receiving email systems to verify the legitimacy of incoming messages.",
+    "Risk": "If DKIM is not enabled, attackers may send spoofed emails that appear to originate from your domain, potentially leading to phishing attacks and damage to your domain's reputation.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/security/office-365-security/use-dkim-to-validate-outbound-email?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-DkimSigningConfig -Identity \u003cdomainName\u003e -Enabled $True",
+        "Other": "1. After DNS records are created, enable DKIM signing in Microsoft 365 Defender. 2. Navigate to Microsoft 365 Defender at https://security.microsoft.com/. 3. Go to Email \u0026 collaboration \u003e Policies \u0026 rules \u003e Threat policies. 4. Under Rules, select Email authentication settings. 5. Choose DKIM, click on each domain, and enable 'Sign messages for this domain with DKIM signature'."
+      },
+      "Recommendation": {
+        "Text": "Enable DKIM for all your Exchange Online domains to ensure emails are cryptographically signed and to protect against email spoofing.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-dkimsigningconfig?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_malware_policy_common_attachments_filter_enabled",
+    "CheckTitle": "Ensure the Common Attachment Types Filter is enabled.",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Defender Malware Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure that the Common Attachment Types Filter is enabled in anti-malware policies to block known and custom malicious file types from being attached to emails.",
+    "Risk": "If this setting is not enabled, users may receive emails with malicious attachments that could contain malware, increasing the risk of endpoint infection or data compromise.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/anti-malware-policies-configure?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-MalwareFilterPolicy -Identity Default -EnableFileFilter $true",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules. 3. On the Policies \u0026 rules page select Threat policies. 4. Under Policies, select Anti-malware and click on the Default (Default) policy. 5. On the policy page, scroll to the bottom and click Edit protection settings. 6. Check the option Enable the common attachments filter. 7. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Enable the common attachment types filter in your default or custom anti-malware policy to prevent the delivery of emails with potentially dangerous attachments.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-malwarefilterpolicy?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_malware_policy_comprehensive_attachments_filter_applied",
+    "CheckTitle": "Ensure the Common Attachment Types Filter is enabled and applied in a comprehensive way",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Defender Malware Policy",
+    "ResourceGroup": "security",
+    "Description": "Ensure that the Common Attachment Types Filter is enabled in all enabled anti-malware policies in a Comprehensive way to block known and custom malicious file types from being attached to emails. This means that the file types that the filter blocks are checked by the organization, by default all the default file types from M365 defender should be blocked but you can change that with the config file.",
+    "Risk": "If this setting or the policy is not enabled, users may receive emails with malicious attachments that could contain malware, increasing the risk of endpoint infection or data compromise.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/anti-malware-protection-about?view=o365-worldwide#common-attachments-filter-in-anti-malware-policies",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$Policy = @{Name = 'CIS L2 Attachment Policy'; EnableFileFilter = $true; }; $L2Extensions = @('ace','ani','apk','app','appx','arj','bat','cab','cmd','com','deb','dex','dll','docm','elf','exe','hta','img','iso','jar','jnlp','kext','lha','lib','library','lnk','lzh','macho','msc','msi','msix','msp','mst','pif','ppa','ppam','reg','rev','scf','scr','sct','sys','uif','vb','vbe','vbs','vxd','wsc','wsf','wsh','xll','xz','z'); New-MalwareFilterPolicy @Policy -FileTypes $L2Extensions; $Rule = @{Name = $Policy.Name; Enabled = $false; MalwareFilterPolicy = $Policy.Name; Priority = 0}; New-MalwareFilterRule @Rule",
+        "Other": "1. Navigate to Microsoft 365 Defender https://security.microsoft.com. 2. Click to expand Email \u0026 collaboration and select Policies \u0026 rules. 3. On the Policies \u0026 rules page select Threat policies. 4. Under Policies, select Anti-malware and click on the Default (Default) policy. 5. On the policy page, scroll to the bottom and click Edit protection settings. 6. Check the option Enable the common attachments filter. 7. Click on select file types and select the file types you want to block. 8. Click Save. 9. Ensure the status of the policy is On"
+      },
+      "Recommendation": {
+        "Text": "Enable the common attachment types filter in your default or custom anti-malware policy to prevent the delivery of emails with potentially dangerous attachments.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-malwarefilterpolicy?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_malware_policy_notifications_internal_users_malware_enabled",
+    "CheckTitle": "Ensure notifications for internal users sending malware is Enabled",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Defender Malware Policy",
+    "ResourceGroup": "security",
+    "Description": "Verify that Exchange Online Protection (EOP) is configured to notify admins of malicious activity from internal users.",
+    "Risk": "If notifications for internal users sending malware are not enabled, administrators may not be aware of potential threats originating from within the organization, increasing the risk of undetected malicious activities.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/anti-malware-protection-about",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-MalwareFilterPolicy -Identity Default -EnableInternalSenderAdminNotifications $true -InternalSenderAdminAddress 'admin@example.com'",
+        "Other": "1. Connect to Exchange Online using Connect-ExchangeOnline. 2. Execute the command: Get-MalwareFilterPolicy | fl Identity, EnableInternalSenderAdminNotifications, InternalSenderAdminAddress. 3. Ensure 'Notify an admin about undelivered messages from internal senders' is set to On and that at least one email address is listed under Administrator email address."
+      },
+      "Recommendation": {
+        "Text": "Enable notifications for internal users sending malware in your Defender Malware Policy to ensure admins are alerted of potential threats.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-malwarefilterpolicy?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "defender_zap_for_teams_enabled",
+    "CheckTitle": "Zero-hour auto purge (ZAP) protects Microsoft Teams from malware and phishing",
+    "CheckType": [],
+    "ServiceName": "defender",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Teams Protection Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Zero-hour auto purge (ZAP) is a protection feature that retroactively detects and neutralizes **malware** and **high confidence phishing** in Teams messages.\n\nWhen ZAP blocks a message, it is blocked for everyone in the chat. The initial block happens right after delivery, but ZAP can occur up to 48 hours after delivery.",
+    "Risk": "Without ZAP enabled, malicious content delivered to Teams chats remains accessible to users for up to 48 hours after delivery, even after being identified as harmful.\n\nThis extended exposure window could lead to:\n- **Malware infections** from weaponized attachments or links\n- **Phishing attacks** compromising user credentials and MFA tokens\n- **Lateral movement** as attackers exploit compromised accounts within the organization",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-TeamsProtectionPolicy -Identity 'Teams Protection Policy' -ZapEnabled $true",
+        "Other": "1. Navigate to Microsoft Defender https://security.microsoft.com/\n2. Click to expand System and select Settings \u003e Email \u0026 collaboration \u003e Microsoft Teams protection\n3. Set Zero-hour auto purge (ZAP) to On (Default)"
+      },
+      "Recommendation": {
+        "Text": "Enable Zero-hour auto purge (ZAP) for Microsoft Teams to ensure malicious content is automatically removed from chats after detection, even if it was delivered before being identified as harmful.",
+        "Url": "https://hub.prowler.com/check/defender_zap_for_teams_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://learn.microsoft.com/en-us/defender-office-365/zero-hour-auto-purge?view=o365-worldwide#zero-hour-auto-purge-zap-in-microsoft-teams",
+      "https://learn.microsoft.com/en-us/defender-office-365/mdo-support-teams-about?view=o365-worldwide"
+    ],
+    "Categories": [
+      "email-security",
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_consent_workflow_enabled",
+    "CheckTitle": "Ensure the admin consent workflow is enabled.",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Organization Settings",
+    "ResourceGroup": "governance",
+    "Description": "Ensure that the admin consent workflow is enabled in Microsoft Entra to allow users to request admin approval for applications requiring consent.",
+    "Risk": "If the admin consent workflow is not enabled, users may be blocked from accessing applications that require admin consent, leading to potential work disruptions or unauthorized workarounds.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-admin-consent-workflow",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com/. 2. Click to expand Identity \u003e Applications and select Enterprise applications. 3. Under Security, select Consent and permissions. 4. Under Manage, select Admin consent settings. 5. Set 'Users can request admin consent to apps they are unable to consent to' to 'Yes'. 6. Configure the reviewers and email notifications settings. 7. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Enable the admin consent workflow in Microsoft Entra to securely manage application consent requests.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/enterprise-apps/configure-admin-consent-workflow"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_portals_access_restriction",
+    "CheckTitle": "Ensure that only administrative roles have access to Microsoft Admin Portals",
+    "CheckType": [],
+    "CheckAliases": [
+      "entra_admin_portals_role_limited_access"
+    ],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that only administrative roles have access to Microsoft Admin Portals to prevent unauthorized changes, privilege escalation, and security misconfigurations.",
+    "Risk": "Allowing non-administrative users to access Microsoft Admin Portals increases the risk of unauthorized changes, privilege escalation, and potential security misconfigurations. Attackers could exploit these privileges to manipulate settings, disable security features, or access sensitive data.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoft-365/admin/add-users/about-admin-roles?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Click New Policy. Under Users include All Users. Under Users select Exclude and check Directory roles and select only administrative roles and a group of PIM eligible users. Under Target resources select Cloud apps and Select apps then select the Microsoft Admin Portals app. Confirm by clicking Select. Under Grant select Block access and click Select. 4. Under Enable policy set it to Report Only until the organization is ready to enable it. 5. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enforce Conditional Access policies to restrict Microsoft Admin Portals to predefined administrative roles. Ensure that only necessary users have access to these portals, applying the principle of least privilege and conducting periodic access reviews to maintain security compliance.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_users_cloud_only",
+    "CheckTitle": "Ensure all Microsoft 365 administrative users are cloud-only",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Administrative User",
+    "ResourceGroup": "IAM",
+    "Description": "This check verifies that all Microsoft 365 administrative users are cloud-only, not synchronized from an on-premises directory, by querying administrative users and checking their synchronization status.",
+    "Risk": "On-premises synchronized administrative users increase the attack surface and compromise the security posture of the cloud environment.  Compromise of on-premises systems could lead to unauthorized access to Microsoft 365 administrative functionalities.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/best-practices#9-use-cloud-native-accounts-for-microsoft-entra-roles",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Identify on-premises synchronized administrative users using Microsoft Entra Connect or equivalent tools. 2.  Create new cloud-only administrative user with appropriate permissions. 3. Migrate administrative tasks from on-premises synchronized users to the new cloud-only user. 4. Disable or remove the on-premises synchronized administrative users."
+      },
+      "Recommendation": {
+        "Text": "Ensure all Microsoft 365 administrative users are cloud-only to reduce the attack surface and improve security posture.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/best-practices#9-use-cloud-native-accounts-for-microsoft-entra-roles"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_users_mfa_enabled",
+    "CheckTitle": "Ensure multifactor authentication is enabled for all users in administrative roles.",
+    "CheckType": [],
+    "CheckAliases": [
+      "entra_admin_mfa_enabled_for_administrative_roles"
+    ],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that multifactor authentication (MFA) is enabled for all users in administrative roles to enhance security and reduce the risk of unauthorized access.",
+    "Risk": "Without MFA enabled for administrative roles, attackers could compromise privileged accounts with only a single authentication factor, increasing the risk of data breaches and unauthorized access to sensitive resources.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/howto-conditional-access-policy-admin-mfa",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com. 2. Expand Protection \u003e Conditional Access and select Policies. 3. Click 'New policy' and configure: Users: Select users and groups \u003e Directory roles (include admin roles). Target resources: Include 'All cloud apps' with no exclusions. Grant: Select 'Grant Access' and check 'Require multifactor authentication'. 4. Set policy to 'Report Only' for testing before full enforcement. 5. Click 'Create'."
+      },
+      "Recommendation": {
+        "Text": "Enable MFA for all users in administrative roles using a Conditional Access policy in Microsoft Entra.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/howto-conditional-access-policy-admin-mfa"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_users_phishing_resistant_mfa_enabled",
+    "CheckTitle": "Ensure phishing-resistant MFA strength is required for all administrator accounts",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "This check verifies that phishing-resistant MFA strength is required for all administrator accounts. Phishing-resistant MFA includes authentication methods that are resistant to phishing attacks and MFA fatigue attacks compared to weaker methods like SMS or push notifications.",
+    "Risk": "Administrators using weaker MFA methods, such as SMS or push notifications, are vulnerable to phishing attacks and MFA fatigue attacks. Attackers can intercept codes or trick users into approving fraudulent authentication requests, leading to unauthorized access to critical systems.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-admin-phish-resistant-mfa",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Click New policy. Under Users include Select users and groups and check Directory roles. At a minimum, include the directory roles listed below in this section of the document. Under Target resources include All cloud apps and do not create any exclusions. Under Grant select Grant Access and check Require authentication strength and set Phishing-resistant MFA in the dropdown box. Click Select. 4. Under Enable policy set it to Report Only until the organization is ready to enable it. 5. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Require phishing-resistant MFA strength for all administrator accounts through Conditional Access policies. Enforce the use of FIDO2 security keys, Windows Hello for Business, or certificate-based authentication. Ensure administrators are pre-registered for these methods before enforcement to prevent lockouts. Maintain a break-glass account exempt from this policy for emergency access.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-admin-phish-resistant-mfa#create-a-conditional-access-policy"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_admin_users_sign_in_frequency_enabled",
+    "CheckTitle": "Ensure Sign-in frequency periodic reauthentication is enabled and properly configured.",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure Sign-in frequency periodic reauthentication is enabled and properly configured to reduce the risk of unauthorized access and session hijacking.",
+    "Risk": "Allowing persistent browser sessions and long sign-in frequencies for administrative users increases the risk of unauthorized access. Attackers could exploit session persistence to maintain access to an admin account without reauthentication, increasing the likelihood of account compromise, especially in cases of credential theft or session hijacking.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com/. 2. Click to expand Protection \u003e Conditional Access Select Policies. 3. Click New policy. Under Users include, select users and groups and check Directory roles. At a minimum, include the directory roles listed below in this section of the document. Under Target resources, include All cloud apps and do not create any exclusions. Under Grant, select Grant Access and check Require multifactor authentication. Under Session, select Sign-in frequency, select Periodic reauthentication, and set it to 4 hours for E3 tenants. E5 tenants with PIM can be set to a maximum value of 24 hours. Check Persistent browser session, then select Never persistent in the drop-down menu. 4. Under Enable policy, set it to Report Only until the organization is ready to enable it."
+      },
+      "Recommendation": {
+        "Text": "Enforce a sign-in frequency limit of no more than 4 hours for E3 tenants (or 24 hours for E5 with Privileged Identity Management) and set browser sessions to Never persistent. This ensures that administrative users are regularly reauthenticated, reducing the risk of prolonged unauthorized access and mitigating session hijacking threats.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-session-lifetime#user-sign-in-frequency"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_dynamic_group_for_guests_created",
+    "CheckTitle": "Ensure a dynamic group for guest users is created.",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Group Settings",
+    "ResourceGroup": "governance",
+    "Description": "Ensure that a dynamic group is created for guest users in Microsoft Entra to enforce conditional access policies and security controls automatically.",
+    "Risk": "Without a dynamic group for guest users, administrators may need to manually manage access controls, leading to potential security gaps and inconsistent policy enforcement.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/users/groups-create-rule",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "New-MgGroup -DisplayName 'Dynamic Guest Users' -MailNickname 'DynGuestUsers' -MailEnabled $false -SecurityEnabled $true -GroupTypes 'DynamicMembership' -MembershipRule '(user.userType -eq \"Guest\")' -MembershipRuleProcessingState 'On'",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com/. 2. Click to expand Identity \u003e Groups and select All groups. 3. Select 'New group' and configure: Group type: Security, Membership type: Dynamic User. 4. Add dynamic query with rule: (user.userType -eq 'Guest'). 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Create a dynamic group for guest users to automate policy enforcement and access control.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/users/groups-create-rule"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_identity_protection_sign_in_risk_enabled",
+    "CheckTitle": "Ensure that Identity Protection sign-in risk policies are enabled",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that Identity Protection sign-in risk policies are enabled to detect and respond to suspicious high and medium risk login attempts in real time.",
+    "Risk": "Without Identity Protection sign-in risk policies enabled, suspicious sign-in attempts may go unnoticed, allowing attackers to access accounts using stolen or compromised credentials. This increases the risk of unauthorized access, data breaches, and privilege escalation.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. 4. Set the following conditions within the policy. Under Users or workload identities choose All users. Under Cloud apps or actions choose All cloud apps. Under Conditions choose Sign-in risk then Yes and check the risk level boxes High and Medium. Under Access Controls select Grant then in the right pane click Grant access then select Require multifactor authentication. Under Session select Sign-in Frequency and set to Every time. Click Select. 5. Under Enable policy set it to Report Only until the organization is ready to enable it. 6. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enable Identity Protection sign-in risk policies to detect and respond to suspicious login attempts in real time. Configure Conditional Access to require MFA for risky sign-ins and ensure all users are enrolled in MFA to prevent account lockouts. Regularly review sign-in risk reports to identify and mitigate potential security threats.",
+        "Url": "https://learn.microsoft.com/en-us/entra/id-protection/howto-identity-protection-configure-risk-policies"
+      }
+    },
+    "Categories": [
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_identity_protection_user_risk_enabled",
+    "CheckTitle": "Ensure that Identity Protection user risk policies are enabled",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that Identity Protection user risk policies are enabled to detect and respond to high risk potential account compromises.",
+    "Risk": "Without Identity Protection user risk policies enabled, compromised accounts may go undetected, allowing attackers to exploit breached credentials and gain unauthorized access. The absence of automated responses to user risk levels increases the likelihood of security incidents, such as data breaches or privilege escalation.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. 4. Set the following conditions within the policy: Under Users or workload identities choose All users. Under Cloud apps or actions choose All cloud apps. Under Conditions choose User risk then Yes and select the user risk level High. Under Access Controls select Grant then in the right pane click Grant access then select Require multifactor authentication and Require password change. Under Session ensure Sign-in frequency is set to Every time. Click Select. 5. Under Enable policy set it to Report Only until the organization is ready to enable it. 6. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enable Identity Protection user risk policies to detect and respond to potential account compromises. Configure Conditional Access policies to enforce MFA or password resets when a high user risk level is detected. Regularly review the Risky Users section to assess potential threats before enforcing strict access controls.",
+        "Url": "https://learn.microsoft.com/en-us/entra/id-protection/howto-identity-protection-configure-risk-policies"
+      }
+    },
+    "Categories": [
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_intune_enrollment_sign_in_frequency_every_time",
+    "CheckTitle": "Ensure sign-in frequency for Intune Enrollment is set to every time",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that Conditional Access policies enforce sign-in frequency to Every time for Microsoft Intune Enrollment Application.",
+    "Risk": "If not enforced, attackers with compromised credentials may enroll a new device into Intune and gain persistent and elevated access through a bypass of compliance-based Conditional Access rules.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/intune/intune-service/fundamentals/deployment-guide-enrollment",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. o Under Users include All users. o Under Target resources select Resources (formerly cloud apps), choose Select resources and add Microsoft Intune Enrollment to the list. o Under Grant select Grant access. o Check either Require multifactor authentication or Require authentication strength. o Under Session check Sign-in frequency and select Every time. 4. Under Enable policy set it to Report-only until the organization is ready to enable it. 5. Click Create"
+      },
+      "Recommendation": {
+        "Text": "Configure a Conditional Access policy that targets Microsoft Intune Enrollment and enforces sign-in frequency to 'Every time'. This ensures that users must reauthenticate for each Intune enrollment action, reducing the risk of unauthorized device enrollment using compromised credentials. Note: Microsoft accounts for a five-minute clock skew when 'every time' is selected, ensuring users are not prompted more frequently than once every five minutes.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/concept-conditional-access-session#sign-in-frequency"
+      }
+    },
+    "Categories": [
+      "e3",
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_legacy_authentication_blocked",
+    "CheckTitle": "Ensure that Conditional Access policy blocks legacy authentication",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that Conditional Access policy blocks legacy authentication in Microsoft Entra ID to enforce modern authentication methods and protect against credential-stuffing and brute-force attacks.",
+    "Risk": "Legacy authentication protocols do not support MFA, making them vulnerable to credential-stuffing and brute-force attacks. Attackers commonly exploit these protocols to bypass security controls and gain unauthorized access.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-block-legacy-authentication",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. Under Users include All users. Under Target resources include All cloud apps and do not create any exclusions. Under Conditions select Client apps and check the boxes for Exchange ActiveSync clients and Other clients. Under Grant select Block Access. Click Select. 4. Set the policy On and click Create."
+      },
+      "Recommendation": {
+        "Text": "Enforce Conditional Access policies to block legacy authentication across all users in Microsoft Entra ID. Ensure all applications and devices use modern authentication methods such as OAuth 2.0. For necessary exceptions (e.g., multifunction printers), configure secure alternatives following Microsoft's mail flow best practices.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-block-legacy-authentication"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_managed_device_required_for_authentication",
+    "CheckTitle": "Ensure that only managed devices are required for authentication",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that only managed devices are required for authentication to reduce the risk of unauthorized access from unsecured or unmanaged devices.",
+    "Risk": "Allowing authentication from unmanaged devices increases the attack surface, as these devices may lack security controls, endpoint detection, and compliance policies. Attackers could leverage compromised credentials from unsecured devices to gain unauthorized access to corporate resources.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. Under Users include All users. Under Target resources include All cloud apps. Under Grant select Grant access. Check Require multifactor authentication and Require Microsoft Entra hybrid joined device. Choose Require one of the selected controls and click Select at the bottom. 4. Under Enable policy set it to Report Only until the organization is ready to enable it. 5. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enforce Conditional Access policies requiring authentication only from managed devices. Configure policies to allow access only from Entra hybrid joined or Intune-compliant devices. This ensures that only secure, policy-enforced endpoints can access corporate resources, reducing the risk of credential theft and unauthorized access.",
+        "Url": "https://learn.microsoft.com/en-us/mem/intune/protect/create-conditional-access-intune"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_managed_device_required_for_mfa_registration",
+    "CheckTitle": "Ensure that only managed devices are required for MFA registration",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that only managed devices are required for MFA registration. This ensures that users enroll MFA using secure, organization-controlled devices.",
+    "Risk": "If users are allowed to register MFA on unmanaged or potentially compromised devices, attackers with stolen credentials may register their own MFA methods, effectively locking out legitimate users and taking over accounts. This increases the risk of unauthorized access, data breaches, and privilege escalation.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Create a new policy by selecting New policy. Under Users include All users. Under Target resources select User actions and check Register security information. Under Grant select Grant access. Check Require multifactor authentication and Require Microsoft Entra hybrid joined device. Choose Require one of the selected controls and click Select at the bottom. 4. Under Enable policy set it to Report Only until the organization is ready to enable it. 5. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enforce MFA registration only from managed devices by requiring compliance through Intune or Entra hybrid join. This ensures that users enroll MFA using secure, organization-controlled devices.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/conditional-access/policy-all-users-device-registration"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_password_hash_sync_enabled",
+    "CheckTitle": "Ensure that password hash sync is enabled for hybrid deployments.",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Organization Settings",
+    "ResourceGroup": "governance",
+    "Description": "Ensure that password hash synchronization is enabled in hybrid Microsoft Entra deployments to facilitate seamless authentication and leaked credential protection.",
+    "Risk": "If password hash synchronization is not enabled, users may need to maintain multiple passwords, increasing security risks. Additionally, leaked credential detection for hybrid accounts would not be available, reducing the organization's ability to prevent account compromises.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/whatis-phs",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Log in to the on-premises server hosting Microsoft Entra Connect. 2. Open Azure AD Connect and click Configure. 3. Select 'Customize synchronization options' and click Next. 4. Provide admin credentials. 5. On the Optional features screen, check 'Password hash synchronization' and click Next. 6. Click Configure and wait for the process to complete."
+      },
+      "Recommendation": {
+        "Text": "Enable password hash synchronization in Microsoft Entra Connect to streamline authentication and enhance security monitoring.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/hybrid/connect/whatis-phs"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Applies only to hybrid Microsoft Entra deployments using Entra Connect sync and does not apply to federated domains."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_policy_ensure_default_user_cannot_create_tenants",
+    "CheckTitle": "Ensure that 'Restrict non-admin users from creating tenants' is set to 'Yes'",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Authorization Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Require administrators or appropriately delegated users to create new tenants.",
+    "Risk": "It is recommended to only allow an administrator to create new tenants. This prevent users from creating new Azure AD or Azure AD B2C tenants and ensures that only authorized users are able to do so.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/fundamentals/users-default-permissions",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Update-MgPolicyAuthorizationPolicy -DefaultUserRolePermissions @{ AllowedToCreateTenants = $false }",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com 2. Click to expand Identity \u003e Users \u003e User settings 3. Set 'Restrict non-admin users from creating tenants' to 'Yes' then 'Save'"
+      },
+      "Recommendation": {
+        "Text": "Enforcing this setting will ensure that only authorized users are able to create new tenants.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#tenant-creator"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_policy_guest_invite_only_for_admin_roles",
+    "CheckTitle": "Ensure that 'Guest invite restrictions' is set to 'Only users assigned to specific admin roles can invite guest users'",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Authorization Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Restrict invitations to users with specific administrative roles only.",
+    "Risk": "Restricting invitations to users with specific administrator roles ensures that only authorized accounts have access to cloud resources. This helps to maintain 'Need to Know' permissions and prevents inadvertent access to data. By default the setting Guest invite restrictions is set to Anyone in the organization can invite guest users including guests and non-admins. This would allow anyone within the organization to invite guests and non-admins to the tenant, posing a security risk.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/external-id/external-collaboration-settings-configure",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Update-MgPolicyAuthorizationPolicy -AllowInvitesFrom 'adminsAndGuestInviters'",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com/. 2. Expand Identity \u003e External Identities and select External collaboration settings. 3. Under Guest invite settings, set 'Guest invite restrictions' to 'Only users assigned to specific admin roles can invite guest users'. 4. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Restrict guest user invitations to only designated administrators or the Guest Inviter role to enhance security.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/permissions-reference#guest-inviter"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "A more restrictive setting is acceptable, but the minimum requirement is limiting invitations to admins and Guest Inviters."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_policy_guest_users_access_restrictions",
+    "CheckTitle": "Ensure That 'Guest users access restrictions' is set to 'Guest user access is restricted to properties and memberships of their own directory objects'",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Authorization Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Limit guest user permissions.",
+    "Risk": "Limiting guest access ensures that guest accounts do not have permission for certain directory tasks, such as enumerating users, groups or other directory resources, and cannot be assigned to administrative roles in your directory. Guest access has three levels of restriction. 1. Guest users have the same access as members (most inclusive), 2. Guest users have limited access to properties and memberships of directory objects (default value), 3. Guest user access is restricted to properties and memberships of their own directory objects (most restrictive). The recommended option is the 3rd, most restrictive: 'Guest user access is restricted to their own directory object'.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/users/users-restrict-guest-permissions",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Update-MgPolicyAuthorizationPolicy -GuestUserRoleId \u003cGUEST_ROLE_ID\u003e",
+        "Other": "1. Navigate to Microsoft Entra admin center https://entra.microsoft.com/. 2. Expand Identity \u003e External Identities and select External collaboration settings. 3. Under Guest user access, set 'Guest user access restrictions' to either 'Guest users have limited access to properties and memberships of directory objects' or 'Guest user access is restricted to properties and memberships of their own directory objects (most restrictive)'."
+      },
+      "Recommendation": {
+        "Text": "Restrict guest user access in Microsoft Entra to limit the exposure of directory objects and reduce security risks.",
+        "Url": "https://learn.microsoft.com/en-us/entra/fundamentals/users-default-permissions#member-and-guest-users"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Either of the two restrictive settings ensures compliance. The most restrictive setting prevents guests from viewing other directory objects entirely."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_policy_restricts_user_consent_for_apps",
+    "CheckTitle": "Ensure 'User consent for applications' is set to 'Do not allow user consent'",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Authorization Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Require administrators to provide consent for applications before use.",
+    "Risk": "If Microsoft Entra ID is running as an identity provider for third-party applications, permissions and consent should be limited to administrators or pre-approved. Malicious applications may attempt to exfiltrate data or abuse privileged user accounts.",
+    "RelatedUrl": "https://learn.microsoft.com/en-gb/entra/identity/enterprise-apps/configure-user-consent?pivots=portal",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to Microsoft Entra admin center (https://entra.microsoft.com/); 2. Click to expand Identity \u003e Applications and select Enterprise applications; 3. Under Security select Consent and permissions \u003e User consent settings; 4. Under User consent for applications select Do not allow user consent; 5. Click the Save option at the top of the window."
+      },
+      "Recommendation": {
+        "Text": "Disable user consent for applications in the Microsoft Entra admin center. This ensures that end users and group owners cannot grant consent to applications, requiring administrator approval for all future consent operations, thereby reducing the risk of unauthorized access to company data.",
+        "Url": "https://learn.microsoft.com/en-gb/entra/identity/enterprise-apps/configure-user-consent?pivots=portal"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Enforcing this setting may create additional requests that administrators need to review."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_thirdparty_integrated_apps_not_allowed",
+    "CheckTitle": "Ensure third party integrated applications are not allowed",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "User settings",
+    "ResourceGroup": "IAM",
+    "Description": "Require administrators or appropriately delegated users to register third-party applications.",
+    "Risk": "It is recommended to only allow an administrator to register custom-developed applications. This ensures that the application undergoes a formal security review and approval process prior to exposing Azure Active Directory data. Certain users like developers or other high-request users may also be delegated permissions to prevent them from waiting on an administrative user. Your organization should review your policies and decide your needs.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity-platform/how-applications-are-added#who-has-permission-to-add-applications-to-my-microsoft-entra-instance",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. From Entra select the Portal Menu 2. Select Azure Active Directory 3. Select Users 4. Select User settings 5. Ensure that Users can register applications is set to No"
+      },
+      "Recommendation": {
+        "Text": "Disable third-party integrated application permissions unless explicitly required. If third-party applications are necessary, implement strict approval processes and security controls to mitigate risks associated with external integrations.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/role-based-access-control/delegate-app-roles#restrict-who-can-create-applications"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Enforcing this setting will create additional requests for approval that will need to be addressed by an administrator. If permissions are delegated, a user may approve a malevolent third party application, potentially giving it access to your data."
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_users_mfa_capable",
+    "CheckTitle": "Ensure all users are MFA capable",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure all users are being registered and enabled for multifactor authentication.",
+    "Risk": "Users who are not MFA capable are more vulnerable to account compromise, as they may rely solely on single-factor authentication (typically a password), which can be easily phished or cracked.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/authentication/concept-mfa-howitworks",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "Remediation steps will depend on the status of the personnel in question or configuration of Conditional Access policies. Administrators should review each user identified on a case-by-case basis."
+      },
+      "Recommendation": {
+        "Text": "Ensure all member users are MFA capable by registering and enabling a strong authentication method that complies with the organization's authentication policy. Regularly review user status to detect gaps in MFA deployment and correct misconfigurations.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/authentication/concept-mfa-howitworks"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "entra_users_mfa_enabled",
+    "CheckTitle": "Ensure multifactor authentication is enabled for all users.",
+    "CheckType": [],
+    "ServiceName": "entra",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Conditional Access Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure that multifactor authentication (MFA) is enabled for all users to enhance security and reduce the risk of unauthorized access.",
+    "Risk": "Without multifactor authentication (MFA), users are at a higher risk of account compromise due to credential theft, phishing, or brute-force attacks. A single-factor authentication method, such as passwords, is often insufficient to protect against modern cyber threats.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/entra/identity/authentication/tutorial-enable-azure-mfa",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Navigate to the Microsoft Entra admin center https://entra.microsoft.com. 2. Click expand Protection \u003e Conditional Access select Policies. 3. Click New policy. Under Users include All users (and do not exclude any user). Under Target resources include All cloud apps and do not create any exclusions. Under Grant select Grant Access and check Require multifactor authentication. Click Select at the bottom of the pane. 4. Under Enable policy set it to Report Only until the organization is ready to enable it. 5. Click Create."
+      },
+      "Recommendation": {
+        "Text": "Enable multifactor authentication for all users in the Microsoft 365 tenant. Ensure users register at least one strong second-factor authentication method, such as Microsoft Authenticator, SMS codes, or phone calls. Educate users on the importance of MFA and provide clear instructions for enrollment to minimize disruptions.",
+        "Url": "https://learn.microsoft.com/en-us/entra/identity/authentication/tutorial-enable-azure-mfa"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_external_email_tagging_enabled",
+    "CheckTitle": "Ensure email from external senders is identified.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Exchange External Mail Tagging",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that emails from external senders are identified using the native External tag experience in Outlook clients, which helps users recognize messages originating outside the organization.",
+    "Risk": "If external email tagging is not enabled, users may be unable to quickly identify emails coming from outside the organization, increasing the risk of phishing or social engineering attacks.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-externalinoutlook?view=exchange-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-ExternalInOutlook -Enabled $true",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the External tag for Outlook to help users visually identify emails from outside the organization.",
+        "Url": "https://techcommunity.microsoft.com/t5/exchange-team-blog/native-external-sender-callouts-on-email-in-outlook/ba-p/2250098"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_mailbox_audit_bypass_disabled",
+    "CheckTitle": "Ensure 'AuditBypassEnabled' is not enabled on any mailbox in the organization.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Mailboxes",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that no mailboxes in the organization have 'AuditBypassEnabled' set to true. This setting prevents mailbox audit logging and can allow unauthorized access without traceability.",
+    "Risk": "If 'AuditBypassEnabled' is set to true for any mailbox, access to those mailboxes won't be logged, creating a blind spot in forensic analysis and increasing the risk of undetected malicious activity.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/exchange/get-mailboxauditbypassassociation?view=exchange-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$MBXAudit = Get-MailboxAuditBypassAssociation -ResultSize unlimited | Where-Object { $_.AuditBypassEnabled -eq $true }; foreach ($mailbox in $MBXAudit) { $mailboxName = $mailbox.Name; Set-MailboxAuditBypassAssociation -Identity $mailboxName -AuditBypassEnabled $false; Write-Host \"Audit Bypass disabled for mailbox Identity: $mailboxName\" -ForegroundColor Green }",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that no mailboxes have 'AuditBypassEnabled' enabled to guarantee full audit logging for all mailbox activities.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-mailboxauditbypassassociation?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_mailbox_policy_additional_storage_restricted",
+    "CheckTitle": "Ensure additional storage providers are restricted in Outlook on the web.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Mailboxes Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Restrict the availability of additional storage providers (e.g., Box, Dropbox, Google Drive) in Outlook on the web to prevent users from accessing external storage services through the OWA interface.",
+    "Risk": "Allowing users to access third-party storage providers from Outlook on the web increases the risk of data exfiltration and exposure to untrusted content or malware.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-owamailboxpolicy?view=exchange-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-OwaMailboxPolicy -Identity OwaMailboxPolicy-Default -AdditionalStorageProvidersAvailable $false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable access to additional storage providers in Outlook on the web to reduce the risk of data leakage.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-owamailboxpolicy?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_organization_mailbox_auditing_enabled",
+    "CheckTitle": "Ensure AuditDisabled organizationally is set to False.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Organization Configuration",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that the AuditDisabled property is set to False at the organizational level in Exchange Online. This enables mailbox auditing by default for all mailboxes and overrides individual mailbox settings.",
+    "Risk": "If mailbox auditing is disabled at the organization level, no mailbox actions are audited, limiting forensic investigation capabilities and exposing the organization to undetected malicious activity.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/purview/audit-mailboxes?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-OrganizationConfig -AuditDisabled $false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Set AuditDisabled to False at the organization level to ensure mailbox auditing is always enforced.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-organizationconfig?view=exchange-ps#-auditdisabled"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_organization_mailtips_enabled",
+    "CheckTitle": "Ensure MailTips are enabled for end users.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Exchange Organization Configuration",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that MailTips are enabled in Exchange Online to provide users with informative messages while composing emails, helping to avoid issues such as sending to large groups or external recipients unintentionally.",
+    "Risk": "Without MailTips, users may inadvertently send sensitive information externally or generate non-delivery reports, leading to communication errors and potential data exposure.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/mailtips/mailtips",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$TipsParams = @{ MailTipsAllTipsEnabled = $true; MailTipsExternalRecipientsTipsEnabled = $true; MailTipsGroupMetricsEnabled = $true; MailTipsLargeAudienceThreshold = '25' }; Set-OrganizationConfig @TipsParams",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable MailTips features in Exchange Online and configure the large audience threshold appropriately to assist users when composing emails.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/exchange/set-organizationconfig?view=exchange-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_organization_modern_authentication_enabled",
+    "CheckTitle": "Ensure Modern Authentication for Exchange Online is enabled.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Exchange Organization Configuration",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that modern authentication is enabled for Exchange Online, requiring exchange and mailboxes clients to use strong authentication mechanisms instead of basic authentication.",
+    "Risk": "If modern authentication is not enabled, Exchange Online email clients may fall back to basic authentication, making it easier for attackers to bypass multifactor authentication and compromise user credentials.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/enable-or-disable-modern-authentication-in-exchange-online",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-OrganizationConfig -OAuth2ClientProfileEnabled $True",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable modern authentication in Exchange Online to enforce secure authentication methods for email clients.",
+        "Url": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/enable-or-disable-modern-authentication-in-exchange-online"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_roles_assignment_policy_addins_disabled",
+    "CheckTitle": "Ensure there is no policy with Outlook add-ins allowed.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Role Assignment Policy",
+    "ResourceGroup": "IAM",
+    "Description": "Restricting users from installing Outlook add-ins reduces the risk of data exposure or exploitation through unapproved or vulnerable add-ins.",
+    "Risk": "Allowing users to install add-ins may expose sensitive information or introduce malicious behavior through third-party integrations. Disabling this capability mitigates the risk of unauthorized data access.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/add-ins-for-outlook/specify-who-can-install-and-manage-add-ins",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$policy = \"Role Assignment Policy - Prevent Add-ins\"; $roles = \"MyTextMessaging\", \"MyDistributionGroups\", \"MyMailSubscriptions\", \"MyBaseOptions\", \"MyVoiceMail\", \"MyProfileInformation\", \"MyContactInformation\", \"MyRetentionPolicies\", \"MyDistributionGroupMembership\"; New-RoleAssignmentPolicy -Name $policy -Roles $roles; Set-RoleAssignmentPolicy -id $policy -IsDefault; Get-EXOMailbox -ResultSize Unlimited | Set-Mailbox -RoleAssignmentPolicy $policy",
+        "Other": "1. Navigate to Exchange admin center https://admin.exchange.microsoft.com. 2. Click to expand Roles \u003e User roles. 3. Select Default Role Assignment Policy. 4. In the right pane, click Manage permissions. 5. Uncheck My Custom Apps, My Marketplace Apps and My ReadWriteMailboxApps under Other roles. 6. Save changes."
+      },
+      "Recommendation": {
+        "Text": "Restrict Outlook add-in installation by updating the Role Assignment Policy to exclude roles that allow app installation.",
+        "Url": "https://learn.microsoft.com/en-us/exchange/permissions-exo/role-assignment-policies"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_shared_mailbox_sign_in_disabled",
+    "CheckTitle": "Shared mailbox has sign-in blocked",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Shared Mailbox",
+    "ResourceGroup": "IAM",
+    "Description": "Shared mailboxes are used for collaboration and should not permit direct sign-in. This check verifies that the **AccountEnabled** property is set to `false` in Entra ID for all shared mailboxes, preventing direct authentication.",
+    "Risk": "When sign-in is enabled on shared mailboxes, users with the password can bypass delegation controls and access the mailbox directly. This undermines **accountability** since actions cannot be attributed to individual users, and it increases the attack surface for credential-based attacks.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Get-EXOMailbox -RecipientTypeDetails SharedMailbox | ForEach-Object { Update-MgUser -UserId $_.ExternalDirectoryObjectId -AccountEnabled:$false }",
+        "Other": "1. Navigate to Entra admin center (https://entra.microsoft.com/)\n2. Expand Identity \u003e Users and select All users\n3. Search for and select the shared mailbox user account\n4. In the properties pane, go to Account status\n5. Uncheck 'Account enabled' and click Save\n6. Repeat for all shared mailbox accounts"
+      },
+      "Recommendation": {
+        "Text": "Block sign-in for all shared mailboxes to ensure users can only access them through delegation. This enforces accountability and reduces security risks from shared credentials.",
+        "Url": "https://hub.prowler.com/check/exchange_shared_mailbox_sign_in_disabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://learn.microsoft.com/en-us/microsoft-365/admin/email/about-shared-mailboxes",
+      "https://learn.microsoft.com/en-us/microsoft-365/admin/email/create-a-shared-mailbox#block-sign-in-for-the-shared-mailbox-account"
+    ],
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_transport_config_smtp_auth_disabled",
+    "CheckTitle": "Ensure SMTP AUTH is disabled.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Transport Config",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that SMTP AUTH is disabled at the organization level in Exchange Online to reduce exposure to legacy protocols that can be exploited for malicious use.",
+    "Risk": "Leaving SMTP AUTH enabled allows legacy clients to authenticate using outdated methods, increasing the risk of credential compromise and unauthorized email sending.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-TransportConfig -SmtpClientAuthenticationDisabled $true",
+        "Other": "1. Navigate to Exchange admin center https://admin.exchange.microsoft.com. 2. Select Settings \u003e Mail flow. 3. Ensure 'Turn off SMTP AUTH protocol for your organization' is checked."
+      },
+      "Recommendation": {
+        "Text": "Disable SMTP AUTH at the organization level to support secure, modern authentication practices and block legacy protocol usage.",
+        "Url": "https://learn.microsoft.com/en-us/exchange/clients-and-mobile-in-exchange-online/authenticated-client-smtp-submission"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_transport_rules_mail_forwarding_disabled",
+    "CheckTitle": "Ensure mail transport rules are set to disable mail forwarding.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Transport Rules",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure mail transport rules are set to disable mail forwarding.",
+    "Risk": "Enabling email auto-forwarding can be exploited by attackers or malicious insiders to exfiltrate sensitive data outside the organization, often without detection.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/security-and-compliance/mail-flow-rules/configuration-best-practices",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Remove-TransportRule -Identity \u003cRuleName\u003e",
+        "Other": "1. Select Exchange to open the Exchange admin center. 2. Select Mail Flow then Rules. 3. For each rule that redirects email to external domains, select the rule and click the 'Delete' icon."
+      },
+      "Recommendation": {
+        "Text": "Block all forms of mail forwarding using Transport rules in Exchange Online. Apply exclusions only where justified by organizational policy.",
+        "Url": "https://learn.microsoft.com/en-us/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_transport_rules_whitelist_disabled",
+    "CheckTitle": "Ensure mail transport rules do not whitelist specific domains",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Transport Rules",
+    "ResourceGroup": "collaboration",
+    "Description": "Mail flow rules (transport rules) in Exchange Online are used to identify and take action on messages that flow through the organization.",
+    "Risk": "Whitelisting domains in transport rules bypasses regular malware and phishing scanning, which can enable an attacker to launch attacks against your users from a safe haven domain.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/exchange/security-and-compliance/mail-flow-rules/configuration-best-practices",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Remove-TransportRule -Identity \u003cRuleName\u003e",
+        "Other": "1. Navigate to Exchange admin center https://admin.exchange.microsoft.com.. 2. Click to expand Mail Flow and then select Rules. 3. For each rule that whitelists specific domains, select the rule and click the 'Delete' icon."
+      },
+      "Recommendation": {
+        "Text": "Remove transport rules that whitelist specific domains to ensure proper scanning.",
+        "Url": "https://learn.microsoft.com/en-us/exchange/security-and-compliance/mail-flow-rules/mail-flow-rules"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "exchange_user_mailbox_auditing_enabled",
+    "CheckTitle": "Ensure mailbox auditing is enabled for all user mailboxes.",
+    "CheckType": [],
+    "ServiceName": "exchange",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Exchange Mailboxes Properties",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure mailbox auditing is enabled for all user mailboxes, including the configuration of audit actions for owners, delegates, and admins beyond the Microsoft defaults. The difference between both subscription is the log age so this parameter is configurable and users can set it to their subscription needs.",
+    "Risk": "If auditing is not properly enabled and configured, critical mailbox actions may go unrecorded, reducing the ability to investigate incidents, enforce compliance, or detect malicious behavior.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/purview/audit-mailboxes?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "$AuditAdmin = @(\"ApplyRecord\", \"Copy\", \"Create\", \"FolderBind\", \"HardDelete\", \"Move\", \"MoveToDeletedItems\", \"SendAs\", \"SendOnBehalf\", \"SoftDelete\", \"Update\", \"UpdateCalendarDelegation\", \"UpdateFolderPermissions\", \"UpdateInboxRules\"); $AuditDelegate = @(\"ApplyRecord\", \"Create\", \"FolderBind\", \"HardDelete\", \"Move\", \"MoveToDeletedItems\", \"SendAs\", \"SendOnBehalf\", \"SoftDelete\", \"Update\", \"UpdateFolderPermissions\", \"UpdateInboxRules\"); $AuditOwner = @(\"ApplyRecord\", \"Create\", \"HardDelete\", \"MailboxLogin\", \"Move\", \"MoveToDeletedItems\", \"SoftDelete\", \"Update\", \"UpdateCalendarDelegation\", \"UpdateFolderPermissions\", \"UpdateInboxRules\"); $MBX = Get-EXOMailbox -ResultSize Unlimited | Where-Object { $_.RecipientTypeDetails -eq \"UserMailbox\" }; $MBX | Set-Mailbox -AuditEnabled $true -AuditLogAgeLimit 90 -AuditAdmin $AuditAdmin -AuditDelegate $AuditDelegate -AuditOwner $AuditOwner",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable mailbox auditing for all user mailboxes and configure auditing for key mailbox actions for owners, delegates, and admins.",
+        "Url": "https://learn.microsoft.com/en-us/purview/audit-mailboxes?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3",
+      "e5"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "purview_audit_log_search_enabled",
+    "CheckTitle": "Ensure Purview audit log search is enabled",
+    "CheckType": [],
+    "ServiceName": "purview",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Purview Settings",
+    "ResourceGroup": "governance",
+    "Description": "Ensure Purview audit log search is enabled.",
+    "Risk": "Disabling Microsoft 365 audit log search can hinder the ability to track and monitor user and admin activities, making it harder to detect suspicious behavior, security incidents, or compliance violations. This can result in undetected breaches and inability to respond to incidents effectively.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/purview/audit-search?tabs=microsoft-purview-portal",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-AdminAuditLogConfig -UnifiedAuditLogIngestionEnabled $true",
+        "Other": "1. Navigate to Microsoft Purview https://compliance.microsoft.com. 2. Select Audit to open the audit search. 3. Click Start recording user and admin activity next to the information warning at the top. 4. Click Yes on the dialog box to confirm."
+      },
+      "Recommendation": {
+        "Text": "Ensure that Microsoft 365 audit log search is enabled to maintain a comprehensive record of user and admin activities. This will help improve security monitoring, support compliance needs, and provide critical insights for responding to incidents.",
+        "Url": "https://learn.microsoft.com/en-us/purview/audit-search?tabs=microsoft-purview-portal"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "sharepoint_external_sharing_managed",
+    "CheckTitle": "Ensure SharePoint external sharing is managed through domain whitelists/blacklists.",
+    "CheckType": [],
+    "ServiceName": "sharepoint",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Sharepoint Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Control the sharing of documents to external domains by either blocking specific domains or only allowing sharing with named trusted domains.",
+    "Risk": "If domain-based sharing restrictions are not enforced, users may share documents with untrusted external entities, increasing the risk of data exfiltration or unauthorized access.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/sharepoint/turn-external-sharing-on-or-off",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SPOTenant -SharingDomainRestrictionMode AllowList -SharingAllowedDomainList 'domain1.com domain2.com'",
+        "Other": "1. Navigate to SharePoint admin center https://admin.microsoft.com/sharepoint. 2. Expand Policies then click Sharing. 3. Expand More external sharing settings and check 'Limit external sharing by domain'. 4. Select 'Add domains' to configure a list of approved domains. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Enforce domain-based restrictions for SharePoint external sharing to control document sharing with trusted domains.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/sharepoint-online/set-spotenant?view=sharepoint-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "sharepoint_external_sharing_restricted",
+    "CheckTitle": "Ensure external content sharing is restricted.",
+    "CheckType": [],
+    "ServiceName": "sharepoint",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Sharepoint Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that external sharing settings in SharePoint are restricted to 'New and existing guests' or a less permissive level to enforce authentication and control over shared content.",
+    "Risk": "If external sharing is not restricted, unauthorized users may gain access to sensitive information, increasing the risk of data breaches and compliance violations.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/sharepoint/turn-external-sharing-on-or-off",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SPOTenant -SharingCapability ExternalUserSharingOnly",
+        "Other": "1. Navigate to SharePoint admin center https://admin.microsoft.com/sharepoint. 2. Click to expand Policies \u003e Sharing. 3. Locate the External sharing section. 4. Under SharePoint, move the slider bar to 'New and existing guests' or a less permissive level."
+      },
+      "Recommendation": {
+        "Text": "Restrict external sharing in SharePoint to 'New and existing guests' or a more restrictive setting to enhance security.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/sharepoint-online/set-spotenant?view=sharepoint-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "sharepoint_guest_sharing_restricted",
+    "CheckTitle": "Ensure that SharePoint guest users cannot share items they don't own.",
+    "CheckType": [],
+    "ServiceName": "sharepoint",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Sharepoint Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that guest users in SharePoint cannot share items they do not own, preventing unauthorized disclosure of shared content.",
+    "Risk": "If guest users are allowed to share items they don't own, there is a higher risk of unauthorized data exposure, as external users could share content beyond intended recipients.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/sharepoint/external-sharing-overview",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SPOTenant -PreventExternalUsersFromResharing $True",
+        "Other": "1. Navigate to SharePoint admin center https://admin.microsoft.com/sharepoint. 2. Click to expand Policies then select Sharing. 3. Expand More external sharing settings and uncheck 'Allow guests to share items they don't own'. 4. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Restrict guest users from sharing items they don't own to enhance security and prevent unauthorized access.",
+        "Url": "https://learn.microsoft.com/en-us/sharepoint/turn-external-sharing-on-or-off"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "sharepoint_modern_authentication_required",
+    "CheckTitle": "Ensure modern authentication for SharePoint applications is required.",
+    "CheckType": [],
+    "ServiceName": "sharepoint",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Sharepoint Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that modern authentication is required for SharePoint applications in Microsoft 365, preventing the use of legacy authentication protocols and blocking access to apps that don't use modern authentication.",
+    "Risk": "If modern authentication is not enforced, SharePoint applications may rely on basic authentication, which lacks strong security measures like MFA and increases the risk of credential theft.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/graph/api/resources/sharepoint?view=graph-rest-1.0",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SPOTenant -LegacyAuthProtocolsEnabled $false",
+        "Other": "1. Navigate to SharePoint admin center https://admin.microsoft.com/sharepoint. 2. Click to expand Policies select Access control. 3. Select Apps that don't use modern authentication. 4. Select the radio button for Block access. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Block access for SharePoint applications that don't use modern authentication to ensure secure authentication mechanisms.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/sharepoint-online/set-spotenant?view=sharepoint-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "sharepoint_onedrive_sync_restricted_unmanaged_devices",
+    "CheckTitle": "Ensure OneDrive sync is restricted for unmanaged devices.",
+    "CheckType": [],
+    "ServiceName": "sharepoint",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Sharepoint Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Microsoft OneDrive allows users to sign in their cloud tenant account and begin syncing select folders or the entire contents of OneDrive to a local computer. By default, this includes any computer with OneDrive already installed, whether it is Entra Joined, Entra Hybrid Joined or Active Directory Domain joined. The recommended state for this setting is Allow syncing only on computers joined to specific domains Enabled: Specify the AD domain GUID(s).",
+    "Risk": "Unmanaged devices can pose a security risk by allowing users to sync sensitive data to unauthorized devices, potentially leading to data leakage or unauthorized access.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/graph/api/resources/sharepoint?view=graph-rest-1.0",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-SPOTenantSyncClientRestriction -Enable -DomainGuids '\u003cdomain_guid_1\u003e; \u003cdomain_guid_2\u003e; ...'",
+        "Other": "1. Navigate to SharePoint admin center https://admin.microsoft.com/sharepoint 2. Click Settings then select OneDrive - Sync. 3. Check the Allow syncing only on computers joined to specific domains. 4. Use the Get-ADDomain PowerShell command on the on-premises server to obtain the GUID for each on-premises domain. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Restrict OneDrive sync to managed devices to prevent unauthorized access to sensitive data.",
+        "Url": "https://learn.microsoft.com/en-us/sharepoint/allow-syncing-only-on-specific-domains"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_email_sending_to_channel_disabled",
+    "CheckTitle": "Ensure users are not be able to email the channel directly.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure users can not send emails to channel email addresses.",
+    "Risk": "Allowing users to send emails to Teams channel email addresses introduces a security risk, as these addresses are outside the tenant’s domain and lack proper security controls. This creates a potential attack vector where threat actors could exploit the channel email to deliver malicious content or spam.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/get-csteamsclientconfiguration?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsClientConfiguration -Identity Global -AllowEmailIntoChannel $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Teams select Teams settings. 3. Under email integration set Users can send emails to a channel email address to Off."
+      },
+      "Recommendation": {
+        "Text": "Disable the ability for users to send emails to Teams channel email addresses to reduce the risk of external abuse and enhance control over organizational communications.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/get-csteamsclientconfiguration?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_external_domains_restricted",
+    "CheckTitle": "Ensure external domains are restricted.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure external domains are restricted from being used in Teams admin center.",
+    "Risk": "Allowing unrestricted communication with external domains in Microsoft Teams increases the risk of exposure to social engineering attacks, phishing, malware delivery (e.g., DarkGate), and exploitation tactics such as GIFShell or username enumeration.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTenantFederationConfiguration -AllowFederatedUsers $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com/. 2. Click to expand Users select External access. 3. Under Teams and Skype for Business users in external organizations set Choose which external domains your users have access to to one of the following: Allow only specific external domains or Block all external domains. 4. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Restrict external collaboration by configuring Teams to either Block all external domains or Allow only specific, trusted external domains. This ensures users can only interact with vetted organizations, significantly reducing the attack surface.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_external_file_sharing_restricted",
+    "CheckTitle": "Ensure external file sharing in Teams is enabled for only approved cloud storage services",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "",
+    "Risk": "Allowing unrestricted third-party cloud storage services in Teams increases the risk of data exfiltration, compliance violations, and unauthorized access to sensitive information. Users may store or share data through unapproved platforms with weaker security controls.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/get-csteamsclientconfiguration?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsClientConfiguration -AllowGoogleDrive $false -AllowShareFile $false -AllowBox $false -AllowDropBox $false -AllowEgnyte $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Teams select Teams settings. 3. Set any unauthorized providers to Off."
+      },
+      "Recommendation": {
+        "Text": "Restrict external file sharing in Teams to only approved cloud storage providers, such as SharePoint Online and OneDrive. Configure Teams policies to block unauthorized services and enforce compliance with organizational data protection standards.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/get-csteamsclientconfiguration?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_external_users_cannot_start_conversations",
+    "CheckTitle": "Ensure external users cannot start conversations.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure external users cannot initiate conversations.",
+    "Risk": "Allowing unmanaged external Teams users to initiate conversations increases the risk of phishing, malware distribution such as DarkGate, social engineering attacks like those by Midnight Blizzard, GIFShell exploitation, and username enumeration.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTenantFederationConfiguration -AllowTeamsConsumerInbound $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com/. 2. Click to expand Users select External access. 3. Scroll to Teams accounts not managed by an organization. 4. Uncheck External users with Teams accounts not managed by an organization can contact users in my organization. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Disable the ability for external Teams users not managed by an organization to initiate conversations by unchecking the option that permits them to contact users in your organization. This provides an added layer of protection, especially if exceptions are made to allow limited communication with unmanaged users.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_anonymous_user_join_disabled",
+    "CheckTitle": "Ensure anonymous users are not able to join meetings.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure individuals who are not sent or forwarded a meeting invite will not be able to join the meeting automatically.",
+    "Risk": "Allowing anonymous users to join meetings can lead to unauthorized access, information leakage, and potential disruptions, especially in meetings involving sensitive data.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowAnonymousUsersToJoinMeeting $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting join \u0026 lobby set Anonymous users can join a meeting to Off."
+      },
+      "Recommendation": {
+        "Text": "Disable anonymous user access to Microsoft Teams meetings to ensure only invited participants can join. This adds a layer of vetting by requiring organizer approval for anyone not explicitly invited.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_anonymous_user_start_disabled",
+    "CheckTitle": "Ensure anonymous users are not able to start meetings.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure anonymous users and dial-in callers are not able to start meetings.",
+    "Risk": "Allowing anonymous users and dial-in callers to start meetings without an authenticated participant present can lead to meeting spamming, unauthorized activity, and potential misuse of organizational resources.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowAnonymousUsersToStartMeeting $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting join \u0026 lobby set Anonymous users and dial-in callers can start a meeting to Off."
+      },
+      "Recommendation": {
+        "Text": "Ensure that anonymous users and dial-in callers are required to wait in the lobby until a verified user from the organization or a trusted external domain starts the meeting. This reduces the risk of abuse and maintains meeting integrity.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_chat_anonymous_users_disabled",
+    "CheckTitle": "Ensure meeting chat does not allow anonymous users",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure meeting chat does not allow anonymous users.",
+    "Risk": "Allowing anonymous users to participate in meeting chat can expose sensitive information and increase the risk of inappropriate content being shared by unverified participants.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -MeetingChatEnabledType 'EnabledExceptAnonymous'",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting engagement verify that Meeting chat is set to On for everyone but anonymous users."
+      },
+      "Recommendation": {
+        "Text": "Restrict chat access during meetings to only authenticated and authorized users. Disable chat capabilities for anonymous users to maintain confidentiality and prevent misuse.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_dial_in_lobby_bypass_disabled",
+    "CheckTitle": "Ensure that dial-in users cannot bypass the lobby in Teams meetings",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure that dial-in users cannot bypass the lobby in Teams meetings",
+    "Risk": "Allowing dial-in users to bypass the lobby may result in unauthorized or unauthenticated individuals joining sensitive meetings without prior validation, increasing the risk of information leakage or meeting disruptions.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowPSTNUsersToBypassLobby $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting join \u0026 lobby set People dialing in can bypass the lobby to Off."
+      },
+      "Recommendation": {
+        "Text": "Require all users dialing in by phone to wait in the lobby until admitted by the meeting organizer, co-organizer, or presenter. This ensures proper vetting before granting access to potentially sensitive discussions.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_external_chat_disabled",
+    "CheckTitle": "Ensure external meeting chat is off",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure users can't read or write messages in external meeting chats with untrusted organizations.",
+    "Risk": "Allowing chat in external meetings increases the risk of exploits like GIFShell or DarkGate malware being delivered to users through untrusted organizations.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowExternalNonTrustedMeetingChat $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting engagement set External meeting chat to Off."
+      },
+      "Recommendation": {
+        "Text": "Disable external meeting chat to prevent potential security risks from untrusted organizations. This helps protect against exploits like GIFShell or DarkGate malware.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_external_control_disabled",
+    "CheckTitle": "Ensure external participants can't give or request control",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure external participants can't give or request control in Teams meetings.",
+    "Risk": "Allowing external participants to give or request control during meetings could lead to unauthorized content sharing or malicious actions by external users.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowExternalParticipantGiveRequestControl $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under content sharing set External participants can give or request control to Off."
+      },
+      "Recommendation": {
+        "Text": "Disable the ability for external participants to give or request control during Teams meetings to prevent unauthorized content sharing and maintain meeting security.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_external_lobby_bypass_disabled",
+    "CheckTitle": "Ensure only people in the organization can bypass the lobby.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure only people in the organization can bypass the lobby.",
+    "Risk": "Allowing external users or unauthenticated participants to bypass the lobby increases the risk of unauthorized access to sensitive meetings and potential disruptions. It may also lead to unscheduled meetings being initiated by external parties.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AutoAdmittedUsers 'EveryoneInCompanyExcludingGuests' ",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under meeting join \u0026 lobby set Who can bypass the lobby to People in my org."
+      },
+      "Recommendation": {
+        "Text": "Ensure that only people within the organization can bypass the lobby, requiring external users and dial-in participants to wait for approval from an organizer, co-organizer, or presenter. This helps secure sensitive meetings and prevents unauthorized access.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_presenters_restricted",
+    "CheckTitle": "Ensure only organizers and co-organizers can present",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure only organizers and co-organizers can present in a Teams meeting. The recommended state is 'Only organizers and co-organizers'.",
+    "Risk": "Allowing everyone to present increases the risk that a malicious user can inadvertently show inappropriate content.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/microsoftteams/meeting-who-present-request-control",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -DesignatedPresenterRoleMode \"OrganizerOnlyUserOverride\"",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under content sharing set Who can present to Only organizers and co-organizers."
+      },
+      "Recommendation": {
+        "Text": "Restrict presentation capabilities to only organizers and co-organizers to reduce the risk of inappropriate content being shown.",
+        "Url": "https://learn.microsoft.com/en-us/microsoftteams/meeting-who-present-request-control"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_meeting_recording_disabled",
+    "CheckTitle": "Ensure meeting recording is disabled by default",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Teams Global Meeting Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensures that only authorized users, such as organizers, co-organizers, and leads, can initiate a recording.",
+    "Risk": "Allowing meeting recordings by default increases the risk of unauthorized individuals capturing and potentially sharing sensitive meeting content.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMeetingPolicy -Identity Global -AllowCloudRecording $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com. 2. Click to expand Meetings select Meeting policies. 3. Click Global (Org-wide default). 4. Under Recording \u0026 transcription set Meeting recording to Off."
+      },
+      "Recommendation": {
+        "Text": "Disable meeting recording in the Global meeting policy to ensure only authorized users can initiate recordings. Create separate policies for users or groups who need recording capabilities.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-csteamsmeetingpolicy?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_security_reporting_enabled",
+    "CheckTitle": "Ensure users can report security concerns in Teams",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Teams Global Messaging Policy",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure Teams user reporting settings allow a user to report a message as malicious for further analysis",
+    "Risk": "Without proper security reporting enabled, users cannot effectively report suspicious or malicious messages, potentially allowing security threats to go unnoticed.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/defender-office-365/submissions-teams?view=o365-worldwide",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTeamsMessagingPolicy -Identity Global -AllowSecurityEndUserReporting $true",
+        "Other": "1. Navigate to Microsoft Teams admin center (https://admin.teams.microsoft.com). 2. Click to expand Messaging and select Messaging policies. 3. Click Global (Org-wide default). 4. Ensure Report a security concern is On."
+      },
+      "Recommendation": {
+        "Text": "Enable security reporting in Teams messaging policy.",
+        "Url": "https://learn.microsoft.com/en-us/defender-office-365/submissions-teams?view=o365-worldwide"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "m365",
+    "CheckID": "teams_unmanaged_communication_disabled",
+    "CheckTitle": "Ensure unmanaged communication is disabled.",
+    "CheckType": [],
+    "ServiceName": "teams",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "Teams Settings",
+    "ResourceGroup": "collaboration",
+    "Description": "Ensure unmanaged communication is disabled in Teams admin center.",
+    "Risk": "Allowing communication with unmanaged Microsoft Teams users increases the risk of targeted attacks such as phishing, malware distribution (e.g., DarkGate), and exploitation techniques like GIFShell and username enumeration. Unmanaged accounts are easier for threat actors to create and use as attack vectors.",
+    "RelatedUrl": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "Set-CsTenantFederationConfiguration -AllowTeamsConsumer $false",
+        "Other": "1. Navigate to Microsoft Teams admin center https://admin.teams.microsoft.com/. 2. Click to expand Users select External access. 3. Scroll to Teams accounts not managed by an organization. 4. Set People in my organization can communicate with Teams users whose accounts aren't managed by an organization to Off. 5. Click Save."
+      },
+      "Recommendation": {
+        "Text": "Disable communication with Teams users whose accounts aren't managed by an organization by setting 'People in my organization can communicate with Teams users whose accounts aren't managed by an organization' to Off. This helps prevent unauthorized or risky external interactions.",
+        "Url": "https://learn.microsoft.com/en-us/powershell/module/teams/set-cstenantfederationconfiguration?view=teams-ps"
+      }
+    },
+    "Categories": [
+      "e3"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  }
+]

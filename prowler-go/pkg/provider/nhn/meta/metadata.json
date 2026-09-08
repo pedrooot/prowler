@@ -1,0 +1,188 @@
+[
+  {
+    "Provider": "nhn",
+    "CheckID": "compute_instance_login_user",
+    "CheckTitle": "Check for Administrative Login Users in NHN Compute Instances",
+    "CheckType": [],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "VMInstance",
+    "ResourceGroup": "compute",
+    "Description": "Checks if NHN Compute instances have administrative login users.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Review the login users configured for each VM instance.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "nhn",
+    "CheckID": "compute_instance_public_ip",
+    "CheckTitle": "Check for Public IP in NHN Compute Instances",
+    "CheckType": [],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "low",
+    "ResourceType": "VMInstance",
+    "ResourceGroup": "compute",
+    "Description": "Check if a floating(public) IP is assigned to an NHN compute instance.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Remove or unassign floating IP if not required to reduce external exposure.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "nhn",
+    "CheckID": "compute_instance_security_groups",
+    "CheckTitle": "Check NHN Compute Security Group Configuration",
+    "CheckType": [],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "VMInstance",
+    "ResourceGroup": "compute",
+    "Description": "Checks if NHN Compute VM instances are using appropriate security group configurations. Using only the default security group can pose a security risk.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Review and modify security group rules for each VM instance.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "nhn",
+    "CheckID": "network_vpc_has_empty_routingtables",
+    "CheckTitle": "Check if VPC has empty routing tables",
+    "CheckType": [],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "VPC",
+    "ResourceGroup": "network",
+    "Description": "Check if VPC has empty routing tables. Having empty routing tables may indicate misconfiguration or incomplete network setup.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that VPC has properly configured routing tables with necessary routes to ensure proper network connectivity. If not needed, delete the empty routing tables.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "nhn",
+    "CheckID": "network_vpc_subnet_enable_dhcp",
+    "CheckTitle": "Check if DHCP is enabled for subnets in VPC",
+    "CheckType": [],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "VPC",
+    "ResourceGroup": "network",
+    "Description": "Check if DHCP is enabled for the subnets in the VPC.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that DHCP is enabled for all subnets where automatic IP address allocation is needed.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "nhn",
+    "CheckID": "network_vpc_subnet_has_external_router",
+    "CheckTitle": "Check for External Router in NHN VPC Subnet",
+    "CheckType": [],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "VPC",
+    "ResourceGroup": "network",
+    "Description": "Checks if VPC allows access from the public internet, by verifying if an external router is configured.",
+    "Risk": "",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Review the external router settings for the VPC Subnet.",
+        "Url": ""
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  }
+]

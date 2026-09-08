@@ -1,0 +1,2793 @@
+[
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_always_pull_images_plugin",
+    "CheckTitle": "Ensure that the admission control plugin AlwaysPullImages is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the AlwaysPullImages admission control plugin is enabled in the Kubernetes API server. This plugin ensures that every new pod always pulls the required images, enforcing image access control and preventing the use of possibly outdated or altered images.",
+    "Risk": "Without AlwaysPullImages, once an image is pulled to a node, any pod can use it without any authorization check, potentially leading to security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#alwayspullimages",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-alwayspullimages-is-set#kubernetes",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,AlwaysPullImages,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the API server to use the AlwaysPullImages admission control plugin to ensure image security and integrity.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers"
+      }
+    },
+    "Categories": [
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Enabling AlwaysPullImages can increase network and registry load and decrease container startup speed. It may not be suitable for all environments."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_anonymous_requests",
+    "CheckTitle": "Ensure that the --anonymous-auth argument is set to false",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "Disable anonymous requests to the API server. When enabled, requests that are not rejected by other configured authentication methods are treated as anonymous requests, which are then served by the API server. Disallowing anonymous requests strengthens security by ensuring all access is authenticated.",
+    "Risk": "Enabling anonymous access to the API server can expose the cluster to unauthorized access and potential security vulnerabilities.",
+    "RelatedUrl": "https://kubernetes.io/docs/admin/authentication/#anonymous-requests",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-anonymous-auth-argument-is-set-to-false-1#kubernetes",
+        "Terraform": "",
+        "CLI": "--anonymous-auth=false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the --anonymous-auth argument in the API server is set to false. This will reject all anonymous requests, enforcing authenticated access to the server.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "While anonymous access can be useful for health checks and discovery, consider the security implications for your specific environment."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_audit_log_maxage_set",
+    "CheckTitle": "Ensure that the --audit-log-maxage argument is set to 30 or as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with an appropriate audit log retention period. Setting --audit-log-maxage to 30 or as per business requirements helps in maintaining logs for sufficient time to investigate past events.",
+    "Risk": "Without an adequate log retention period, there may be insufficient audit history to investigate and analyze past events or security incidents.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/cluster-administration/audit/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-audit-log-maxage-argument-is-set-to-30-or-as-appropriate#kubernetes",
+        "Terraform": "",
+        "CLI": "--audit-log-maxage=30",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the API server audit log retention period to retain logs for at least 30 days or as per your organization's requirements.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure the audit log retention period is set appropriately to balance between storage constraints and the need for historical data."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_audit_log_maxbackup_set",
+    "CheckTitle": "Ensure that the --audit-log-maxbackup argument is set to 10 or as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with an appropriate number of audit log backups. Setting --audit-log-maxbackup to 10 or as per business requirements helps maintain a sufficient log backup for investigations or analysis.",
+    "Risk": "Without an adequate number of audit log backups, there may be insufficient log history to investigate past events or security incidents.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/cluster-administration/audit/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-audit-log-maxbackup-argument-is-set-to-10-or-as-appropriate#kubernetes",
+        "Terraform": "",
+        "CLI": "--audit-log-maxbackup=10",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the API server audit log backup retention to 10 or as per your organization's requirements.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure the audit log backup retention period is set appropriately to balance between storage constraints and the need for historical data."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_audit_log_maxsize_set",
+    "CheckTitle": "Ensure that the --audit-log-maxsize argument is set to 100 or as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with an appropriate audit log file size limit. Setting --audit-log-maxsize to 100 MB or as per business requirements helps manage the size of log files and prevents them from growing excessively large.",
+    "Risk": "Without an appropriate audit log file size limit, log files can grow excessively large, potentially leading to storage issues and difficulty in log analysis.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/cluster-administration/audit/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-audit-log-maxsize-argument-is-set-to-100-or-as-appropriate#kubernetes",
+        "Terraform": "",
+        "CLI": "--audit-log-maxsize=100",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the API server audit log file size limit to 100 MB or as per your organization's requirements.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Adjust the audit log file size limit based on your organization's storage capabilities and logging requirements."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_audit_log_path_set",
+    "CheckTitle": "Ensure that the --audit-log-path argument is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes API server is configured with an audit log path. Enabling audit logs helps in maintaining a chronological record of all activities and operations which can be critical for security analysis and troubleshooting.",
+    "Risk": "Without audit logs, it becomes difficult to track changes and activities within the cluster, potentially obscuring the detection of malicious activities or operational issues.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/cluster-administration/audit/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-audit-log-path-argument-is-set#kubernetes",
+        "Terraform": "",
+        "CLI": "--audit-log-path=/var/log/apiserver/audit.log",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable audit logging in the API server by specifying a valid path for --audit-log-path to ensure comprehensive activity logging within the cluster.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Audit logs are not enabled by default in Kubernetes. Configuring them is essential for security monitoring and forensic analysis."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_auth_mode_include_node",
+    "CheckTitle": "Ensure that the --authorization-mode argument includes Node",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured to include 'Node' in its --authorization-mode argument. This mode restricts kubelets to only read objects associated with their nodes, enhancing security.",
+    "Risk": "If the Node authorization mode is not included, kubelets may have broader access than necessary, which can pose a security risk.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/node/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-authorization-mode-argument-includes-node",
+        "Terraform": "",
+        "CLI": "--authorization-mode=Node,RBAC",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the API server to use Node authorization mode along with other modes like RBAC to restrict kubelet access to the necessary resources.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, Node authorization is not enabled in Kubernetes. It is important to set this for restricting kubelet nodes appropriately."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_auth_mode_include_rbac",
+    "CheckTitle": "Ensure that the --authorization-mode argument includes RBAC",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that Role Based Access Control (RBAC) is enabled in the Kubernetes API server's authorization mode. RBAC allows for fine-grained control over cluster operations and is recommended for secure and manageable access control.",
+    "Risk": "If RBAC is not included in the API server's authorization mode, the cluster may not be leveraging fine-grained access controls, leading to potential security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-authorization-mode-argument-includes-rbac",
+        "Terraform": "",
+        "CLI": "--authorization-mode=Node,RBAC",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that the API server is configured with RBAC authorization mode for enhanced security and access control.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, Kubernetes API server may not use RBAC authorization. It is crucial to enable this setting to ensure proper access control in the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_auth_mode_not_always_allow",
+    "CheckTitle": "Ensure that the --authorization-mode argument is not set to AlwaysAllow",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is not configured to always authorize all requests. The 'AlwaysAllow' mode bypasses all authorization checks, which should not be used on production clusters.",
+    "Risk": "If set to AlwaysAllow, the API server would authorize all requests, potentially leading to unauthorized access and security vulnerabilities.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/authorization/#using-flags-for-your-authorization-module",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-authorization-mode-argument-is-not-set-to-alwaysallow",
+        "Terraform": "",
+        "CLI": "--authorization-mode=RBAC",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the API server is using a secure authorization mode, such as RBAC, and not set to AlwaysAllow.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, AlwaysAllow is not enabled in kube-apiserver. It's crucial to maintain this setting for the security of the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_client_ca_file_set",
+    "CheckTitle": "Ensure that the --client-ca-file argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with the --client-ca-file argument, specifying the CA file for client authentication. This setting enables the API server to authenticate clients using certificates signed by the CA and is crucial for secure communication.",
+    "Risk": "If the client CA file is not set, the API server may not properly authenticate clients, potentially leading to unauthorized access.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/best-practices/certificates/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-client-ca-file-argument-is-set-as-appropriate-scored",
+        "Terraform": "",
+        "CLI": "--client-ca-file=\u003cpath/to/client-ca-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the API server is configured with a client CA file for secure client authentication.",
+        "Url": "https://kubernetes.io/docs/setup/best-practices/certificates/#certificate-paths"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The client CA file is a critical component of TLS authentication and should be properly managed and securely stored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_deny_service_external_ips",
+    "CheckTitle": "Ensure that the DenyServiceExternalIPs is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures the DenyServiceExternalIPs admission controller is enabled, which rejects all new usage of the Service field externalIPs. Enabling this controller enhances security by preventing the misuse of the externalIPs field.",
+    "Risk": "Not setting the DenyServiceExternalIPs admission controller could allow users to create Services with external IPs, potentially exposing services to security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#denyserviceexternalips",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "--disable-admission-plugins=DenyServiceExternalIPs",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the DenyServiceExternalIPs admission controller by setting the '--disable-admission-plugins' argument in the kube-apiserver configuration.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#how-do-i-turn-off-an-admission-controller"
+      }
+    },
+    "Categories": [
+      "internet-exposed",
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Consider the impact on existing services before enabling this admission controller, as it can restrict the usage of external IPs in the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_disable_profiling",
+    "CheckTitle": "Ensure that the --profiling argument is set to false",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that profiling is disabled in the Kubernetes API server. Profiling generates extensive data about the system's performance and operations, which, if not needed, should be disabled to reduce the attack surface.",
+    "Risk": "Enabled profiling can potentially expose detailed system and program data, which might be exploited for malicious purposes.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-profiling-argument-is-set-to-false-2",
+        "Terraform": "",
+        "CLI": "--profiling=false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable profiling in the API server unless it is necessary for troubleshooting performance bottlenecks.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Profiling is enabled by default in Kubernetes. Disabling it when not needed helps in securing the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_encryption_provider_config_set",
+    "CheckTitle": "Ensure that the --encryption-provider-config argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with the --encryption-provider-config argument to encrypt sensitive data at rest in the etcd key-value store. Encrypting data at rest prevents potential unauthorized disclosures and ensures that the sensitive data is secure.",
+    "Risk": "Without proper configuration of the encryption provider, sensitive data stored in etcd might not be encrypted, posing a risk of data breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "--encryption-provider-config=/path/to/EncryptionConfig/File",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure and enable encryption for data at rest in etcd using a suitable EncryptionConfig file.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#determining-whether-encryption-at-rest-is-already-enabled"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that the EncryptionConfig file is correctly configured and securely stored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_etcd_cafile_set",
+    "CheckTitle": "Ensure that the --etcd-cafile argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with the --etcd-cafile argument, specifying the Certificate Authority file for etcd client connections. This setting is important for secure communication with etcd and ensures that the API server connects to etcd with an SSL Certificate Authority file.",
+    "Risk": "Without proper TLS configuration, communication between the API server and etcd can be unencrypted, leading to potential security vulnerabilities.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-etcd-cafile-argument-is-set-as-appropriate-1",
+        "Terraform": "",
+        "CLI": "--etcd-cafile=\u003cpath/to/ca-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure etcd connections from the API server are secured using the appropriate CA file.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#limiting-access-of-etcd-clusters"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "It is crucial to manage and rotate the CA file securely as part of your cluster's security practices."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_etcd_tls_config",
+    "CheckTitle": "Ensure that the --etcd-certfile and --etcd-keyfile arguments are set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with TLS encryption for etcd client connections, using --etcd-certfile and --etcd-keyfile arguments. Setting up TLS for etcd is crucial for securing the sensitive data stored in etcd as it's the primary datastore for Kubernetes.",
+    "Risk": "Without TLS encryption, data stored in etcd is susceptible to eavesdropping and man-in-the-middle attacks, potentially leading to data breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-etcd-certfile-and-etcd-keyfile-arguments-are-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--etcd-certfile=\u003cpath/to/client-certificate-file\u003e --etcd-keyfile=\u003cpath/to/client-key-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable TLS encryption for etcd client connections to secure sensitive data.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#limiting-access-of-etcd-clusters"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "TLS encryption for etcd is not enabled by default and should be explicitly configured."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_event_rate_limit",
+    "CheckTitle": "Ensure that the admission control plugin EventRateLimit is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies if the Kubernetes API server is configured with the EventRateLimit admission control plugin. This plugin limits the rate of events accepted by the API Server, preventing potential DoS attacks by misbehaving workloads.",
+    "Risk": "Without EventRateLimit, the API server could be overwhelmed by a high number of events, leading to DoS and performance issues.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-eventratelimit-is-set",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,EventRateLimit,... --admission-control-config-file=/path/to/configuration/file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure EventRateLimit as an admission control plugin for the API server to manage the rate of incoming events effectively.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#eventratelimit"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Tuning EventRateLimit requires careful consideration of the specific requirements of your environment."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_kubelet_cert_auth",
+    "CheckTitle": "Ensure that the --kubelet-certificate-authority argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is set up with a specified certificate authority for kubelet connections, using the --kubelet-certificate-authority argument. This setup is crucial for verifying the kubelet's certificate to prevent man-in-the-middle attacks during connections from the apiserver to the kubelet.",
+    "Risk": "Without the --kubelet-certificate-authority argument, connections to kubelets are not verified, increasing the risk of man-in-the-middle attacks, especially over untrusted networks.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/best-practices/certificates/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-kubelet-certificate-authority-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--kubelet-certificate-authority=/path/to/ca-file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable TLS verification between the apiserver and kubelets by specifying the certificate authority in the kube-apiserver configuration.",
+        "Url": "https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certificates-manually"
+      }
+    },
+    "Categories": [
+      "cluster-security",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, the kube-apiserver does not verify kubelet certificates. Enabling this setting enhances the security of master-node communications."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_kubelet_tls_auth",
+    "CheckTitle": "Ensure that the --kubelet-client-certificate and --kubelet-client-key arguments are set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is set up with certificate-based authentication to the kubelet. This setup requires the --kubelet-client-certificate and --kubelet-client-key arguments in the kube-apiserver configuration to be set, ensuring secure communication between the API server and kubelets.",
+    "Risk": "Without certificate-based authentication to kubelets, requests from the apiserver are treated as anonymous, which could lead to unauthorized access and manipulation of node resources.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/best-practices/certificates/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-kubelet-client-certificate-and-kubelet-client-key-arguments-are-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--kubelet-client-certificate=/path/to/client-certificate-file --kubelet-client-key=/path/to/client-key-file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable TLS authentication between the apiserver and kubelets by specifying the client certificate and key in the kube-apiserver configuration.",
+        "Url": "https://kubernetes.io/docs/setup/best-practices/certificates/#configure-certificates-manually"
+      }
+    },
+    "Categories": [
+      "cluster-security",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, the kube-apiserver does not authenticate to kubelets using certificates. Enabling this increases the security posture of the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_namespace_lifecycle_plugin",
+    "CheckTitle": "Ensure that the admission control plugin NamespaceLifecycle is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the NamespaceLifecycle admission control plugin is enabled in the Kubernetes API server. This plugin prevents the creation of objects in non-existent or terminating namespaces, enforcing the integrity of the namespace lifecycle and availability of new objects.",
+    "Risk": "Without NamespaceLifecycle, objects may be created in namespaces that are being terminated, potentially leading to inconsistencies and resource conflicts.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-namespacelifecycle-is-set",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,NamespaceLifecycle,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the NamespaceLifecycle admission control plugin in the API server to enforce proper namespace management.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#namespacelifecycle"
+      }
+    },
+    "Categories": [
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "NamespaceLifecycle plugin is usually enabled by default, ensuring proper management of namespace creation and termination."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_no_always_admit_plugin",
+    "CheckTitle": "Ensure that the admission control plugin AlwaysAdmit is not set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes API server is not configured with the AlwaysAdmit admission control plugin. The AlwaysAdmit plugin allows all requests without any filtering, which is a security risk and is deprecated.",
+    "Risk": "Enabling AlwaysAdmit permits all requests by default, bypassing other admission control checks, which can lead to unauthorized access.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-alwaysadmit-is-not-set",
+        "Terraform": "",
+        "CLI": "--disable-admission-plugins=...,AlwaysAdmit,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the API server does not use the AlwaysAdmit admission control plugin to maintain proper security checks for all requests.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#alwaysadmit"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "AlwaysAdmit is deprecated and should not be used. Ensure it is removed from the API server configuration."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_no_token_auth_file",
+    "CheckTitle": "Ensure that the --token-auth-file parameter is not set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is not using static token-based authentication, which is less secure. Static tokens are stored in clear-text and lack features like revocation or rotation without restarting the API server.",
+    "Risk": "Using static token-based authentication exposes the cluster to security risks due to the static nature of the tokens, their clear-text storage, and the inability to revoke or rotate them easily.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/authentication/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-token-auth-file-parameter-is-not-set",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Replace token-based authentication with more secure mechanisms like client certificate authentication. Ensure the --token-auth-file argument is not used in the API server configuration.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/authentication/#static-token-file"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, the --token-auth-file argument is not set in the kube-apiserver. Ensure it remains unset or is removed if currently in use."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_node_restriction_plugin",
+    "CheckTitle": "Ensure that the admission control plugin NodeRestriction is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the NodeRestriction admission control plugin is enabled in the Kubernetes API server. NodeRestriction limits the Node and Pod objects that a kubelet can modify, enhancing security by ensuring kubelets are restricted to manage their own node and pods.",
+    "Risk": "Without NodeRestriction, kubelets may have broader access to Node and Pod objects, potentially leading to unauthorized modifications and security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-noderestriction-is-set",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,NodeRestriction,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the NodeRestriction admission control plugin in the API server for enhanced node and pod security.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#noderestriction"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "NodeRestriction is critical in clusters where kubelets need restricted access to Node and Pod objects they manage."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_request_timeout_set",
+    "CheckTitle": "Ensure that the --request-timeout argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes API server is configured with an appropriate global request timeout. Setting a suitable --request-timeout value ensures the API server can handle requests efficiently without exhausting resources, especially in cases of slower connections or high-volume data requests.",
+    "Risk": "An inadequately set request timeout may lead to inefficient handling of API requests, either by timing out too quickly on slow connections or by allowing requests to consume excessive resources, leading to potential Denial-of-Service attacks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-request-timeout-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--request-timeout=300s",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Set the API server request timeout to a value that balances resource usage efficiency and the needs of your environment, considering connection speeds and data volumes.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/#options"
+      }
+    },
+    "Categories": [
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The default timeout is set to 60 seconds. Adjust according to the specific requirements and constraints of your Kubernetes environment."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_security_context_deny_plugin",
+    "CheckTitle": "Ensure that the admission control plugin SecurityContextDeny is set if PodSecurityPolicy is not used",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the SecurityContextDeny admission control plugin is enabled in the Kubernetes API server if PodSecurityPolicy is not used. The SecurityContextDeny plugin denies pods that make use of certain SecurityContext fields which could allow privilege escalation.",
+    "Risk": "Without SecurityContextDeny, pods may be able to escalate privileges if PodSecurityPolicy is not used, potentially leading to security vulnerabilities.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-securitycontextdeny-is-set-if-podsecuritypolicy-is-not-used",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,SecurityContextDeny,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Use SecurityContextDeny as an admission control plugin in the API server to enhance security, especially in the absence of PodSecurityPolicy.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#securitycontextdeny"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "SecurityContextDeny is recommended in environments where PodSecurityPolicy is not implemented to prevent potential privilege escalations."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_service_account_key_file_set",
+    "CheckTitle": "Ensure that the --service-account-key-file argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with a --service-account-key-file argument, specifying the public key file for service account verification. A separate key pair for service accounts enhances security by enabling key rotation and ensuring service account tokens are verified with a specific public key.",
+    "Risk": "Without a specified service account public key file, the API server may use the private key from its TLS serving certificate, hindering the ability to rotate keys and increasing security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-service-account-key-file-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--service-account-key-file=\u003cpath/to/key-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Specify a separate public key file for verifying service account tokens in pod {pod.name}.",
+        "Url": "https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/#serviceaccount-token-volume-projection"
+      }
+    },
+    "Categories": [
+      "trustboundaries",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure the public key used is securely managed and rotated in accordance with your organization's security policy."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_service_account_lookup_true",
+    "CheckTitle": "Ensure that the --service-account-lookup argument is set to true",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with --service-account-lookup set to true. This setting validates the service account associated with each request, ensuring that the service account token is not only valid but also currently exists.",
+    "Risk": "If --service-account-lookup is disabled, deleted service accounts might still be used, posing a security risk.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/authentication/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-service-account-lookup-argument-is-set-to-true",
+        "Terraform": "",
+        "CLI": "--service-account-lookup=true",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable service account lookup in the API server to ensure that only existing service accounts are used for authentication.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/authentication/#service-account-tokens"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, this argument is set to true. It's critical to maintain this setting for security."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_service_account_plugin",
+    "CheckTitle": "Ensure that the admission control plugin ServiceAccount is set",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the ServiceAccount admission control plugin is enabled in the Kubernetes API server. This plugin automates the creation and assignment of service accounts to pods, enhancing security by managing service account tokens.",
+    "Risk": "If the ServiceAccount admission plugin is disabled, pods might be assigned the default service account without proper token management, leading to potential security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-admission-control-plugin-serviceaccount-is-set",
+        "Terraform": "",
+        "CLI": "--enable-admission-plugins=...,ServiceAccount,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the ServiceAccount admission control plugin in the API server to manage service accounts and tokens securely.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/admission-controllers/#serviceaccount"
+      }
+    },
+    "Categories": [
+      "trustboundaries",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "ServiceAccount plugin is usually enabled by default, ensuring automated management of service accounts and their associated tokens."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_strong_ciphers_only",
+    "CheckTitle": "Ensure that the API Server only makes use of Strong Cryptographic Ciphers",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured to only use strong cryptographic ciphers, minimizing the risk of vulnerabilities associated with weaker ciphers. Strong ciphers enhance the security of TLS connections to the API server.",
+    "Risk": "Using weak ciphers can leave the API server vulnerable to cryptographic attacks, compromising the security of data in transit.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-kubelet-only-makes-use-of-strong-cryptographic-ciphers#kubernetes",
+        "Terraform": "",
+        "CLI": "--tls-cipher-suites=TLS_AES_128_GCM_SHA256,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the API server to only use strong cryptographic ciphers for enhanced security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-apiserver/#options"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The choice of ciphers may need to be updated based on evolving security standards and client compatibility."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "apiserver_tls_config",
+    "CheckTitle": "Ensure that the --tls-cert-file and --tls-private-key-file arguments are set as appropriate",
+    "CheckType": [],
+    "ServiceName": "apiserver",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesAPIServer",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes API server is configured with TLS for secure communication. The --tls-cert-file and --tls-private-key-file arguments should be set to enable TLS encryption, thereby securing sensitive data transmitted to and from the API server.",
+    "Risk": "If TLS is not properly configured, the API server communication could be unencrypted, leading to potential data breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/best-practices/certificates/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-tls-cert-file-and-tls-private-key-file-arguments-are-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--tls-cert-file=\u003cpath/to/tls-certificate-file\u003e --tls-private-key-file=\u003cpath/to/tls-key-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure TLS is enabled and properly configured for the API server to secure communications.",
+        "Url": "https://kubernetes.io/docs/setup/best-practices/certificates/#certificate-paths"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "TLS should be a standard security measure for all Kubernetes deployments to protect sensitive data."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_bind_address",
+    "CheckTitle": "Ensure that the --bind-address argument is set to 127.0.0.1",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes Controller Manager is bound to the loopback address (127.0.0.1) to minimize the cluster's attack surface. Binding to the loopback address ensures that the Controller Manager API service is not exposed to unauthorized network access.",
+    "Risk": "Binding the Controller Manager to a non-loopback address exposes sensitive health and metrics information without authentication or encryption.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-bind-address-argument-is-set-to-127001",
+        "Terraform": "",
+        "CLI": "--bind-address=127.0.0.1",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Bind the Controller Manager to the loopback address for enhanced security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/"
+      }
+    },
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Check for the --address argument as well, as it might be used instead of --bind-address in certain Kubernetes versions."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_disable_profiling",
+    "CheckTitle": "Ensure that the --profiling argument is set to false",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that profiling is disabled in the Kubernetes Controller Manager, reducing the potential attack surface.",
+    "Risk": "Enabling profiling can expose detailed system and program information, which could be exploited if accessed by unauthorized users.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-profiling-argument-is-set-to-false",
+        "Terraform": "",
+        "CLI": "--profiling=false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable profiling in the Kubernetes Controller Manager for enhanced security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/#options"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Profiling should be turned off unless it is explicitly required for troubleshooting performance issues."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_garbage_collection",
+    "CheckTitle": "Ensure that the --terminated-pod-gc-threshold argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "Activate garbage collector on pod termination, as appropriate. Garbage collection is crucial for maintaining resource availability and performance. The default threshold for garbage collection is 12,500 terminated pods, which may be too high for some systems. Adjusting this threshold based on system resources and performance tests is recommended.",
+    "Risk": "A high threshold for garbage collection can lead to degraded performance and resource exhaustion. In extreme cases, it might cause system crashes or prolonged unavailability.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#pod-garbage-collection",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-terminated-pod-gc-threshold-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--terminated-pod-gc-threshold=10",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Review and adjust the --terminated-pod-gc-threshold argument in the kube-controller-manager to ensure efficient garbage collection and optimal resource utilization.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/"
+      }
+    },
+    "Categories": [
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The default value of --terminated-pod-gc-threshold is 12500. Adjust according to your specific cluster workload and performance requirements."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_root_ca_file_set",
+    "CheckTitle": "Ensure that the --root-ca-file argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes Controller Manager is configured with the --root-ca-file argument set to a certificate bundle file, allowing pods to verify the API server's serving certificate.",
+    "Risk": "Not setting the root CA file can expose pods to man-in-the-middle attacks due to unverified TLS connections to the API server.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/best-practices/certificates/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-root-ca-file-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--root-ca-file=/path/to/ca-file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the Controller Manager with a root CA file to enhance security for pods communicating with the API server.",
+        "Url": "https://kubernetes.io/docs/setup/best-practices/certificates/#certificate-paths"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that the certificate bundle file is properly maintained and updated as needed."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_rotate_kubelet_server_cert",
+    "CheckTitle": "Ensure that the RotateKubeletServerCertificate argument is set to true",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes Controller Manager is configured with the RotateKubeletServerCertificate argument set to true, enabling automated rotation of kubelet server certificates.",
+    "Risk": "Not enabling kubelet server certificate rotation could lead to downtime due to expired certificates.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/tls/certificate-rotation/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-rotatekubeletservercertificate-argument-is-set-to-true-for-controller-manager#kubernetes",
+        "Terraform": "",
+        "CLI": "--feature-gates='RotateKubeletServerCertificate=true'",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable kubelet server certificate rotation in the Controller Manager for automated certificate management.",
+        "Url": "https://kubernetes.io/docs/tasks/tls/certificate-rotation/#understanding-the-certificate-rotation-configuration"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that your cluster setup supports kubelet server certificate rotation."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_service_account_credentials",
+    "CheckTitle": "Ensure that the --use-service-account-credentials argument is set to true",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the Kubernetes Controller Manager is configured to use individual service account credentials for each controller, enhancing the security and role separation within the Kubernetes system.",
+    "Risk": "Not using individual service account credentials can lead to overly broad permissions and potential security risks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-use-service-account-credentials-argument-is-set-to-true",
+        "Terraform": "",
+        "CLI": "--use-service-account-credentials=true",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the Controller Manager to use individual service account credentials for enhanced security and role separation.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/#options"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that appropriate roles and permissions are set for each service account when enabling this feature."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "controllermanager_service_account_private_key_file",
+    "CheckTitle": "Ensure that the --service-account-private-key-file argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "controllermanager",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesControllerManager",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes Controller Manager is configured with the --service-account-private-key-file argument set to the private key file for service accounts.",
+    "Risk": "Not setting a private key file for service accounts can hinder the ability to securely rotate service account tokens.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-service-account-private-key-file-argument-is-set-as-appropriate",
+        "Terraform": "",
+        "CLI": "--service-account-private-key-file=/path/to/sa-key-file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure the Controller Manager with a private key file for service accounts to maintain security and enable token rotation.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/#token-controller"
+      }
+    },
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure the private key file is securely maintained and periodically rotated as per the organization's policy."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_admission_hostport_containers",
+    "CheckTitle": "Minimize the admission of containers which use HostPorts",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers that require the use of HostPorts. This helps maintain network policy controls and reduce security risks.",
+    "Risk": "Permitting containers with HostPorts can bypass network policy controls, increasing the risk of unauthorized network access.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_25#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Limit the use of HostPorts in Kubernetes containers to maintain network security.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Carefully evaluate the need for HostPorts in container configurations and prefer network policies for secure communication."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_admission_windows_hostprocess_containers",
+    "CheckTitle": "Minimize the admission of Windows HostProcess Containers",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of Windows containers with the hostProcess flag set to true, thus reducing the risk of privilege escalation and security breaches.",
+    "Risk": "Allowing Windows containers with hostProcess can lead to increased security risks due to privileged access to Windows nodes.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/configure-pod-container/create-hostprocess-pod/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_1#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of Windows HostProcess containers unless essential for their operation.",
+        "Url": "https://kubernetes.io/docs/tasks/configure-pod-container/create-hostprocess-pod/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Carefully review the need for HostProcess containers in Windows environments and restrict their use."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_allowPrivilegeEscalation_containers",
+    "CheckTitle": "Minimize the admission of containers with allowPrivilegeEscalation",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers that have the allowPrivilegeEscalation flag set to true, preventing processes within containers from gaining additional privileges.",
+    "Risk": "Allowing containers with allowPrivilegeEscalation can lead to elevated privileges within the container's context, posing a security risk.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_19#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of allowPrivilegeEscalation in containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for containers requiring allowPrivilegeEscalation should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_containers_added_capabilities",
+    "CheckTitle": "Minimize the admission of containers with added capabilities",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers with capabilities assigned beyond the default set, mitigating the risks of container breakout attacks.",
+    "Risk": "Allowing containers with additional capabilities increases the risk of security breaches and container breakout attacks.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the addition of extra capabilities to containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for adding capabilities should be explicitly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_containers_capabilities_assigned",
+    "CheckTitle": "Minimize the admission of containers with capabilities assigned",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers with Linux capabilities assigned, adhering to the principle of least privilege and reducing the risk of privilege escalation.",
+    "Risk": "Assigning unnecessary Linux capabilities to containers increases the risk of privilege escalation and security breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_34#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the assignment of Linux capabilities to containers unless essential for their operation.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Review the use of capabilities in applications and ensure that only necessary capabilities are assigned."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_hostIPC_containers",
+    "CheckTitle": "Minimize the admission of containers wishing to share the host IPC namespace",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers that share the host's IPC namespace. Containers with hostIPC can interact with processes outside of the container, potentially leading to security risks.",
+    "Risk": "Allowing containers to share the host's IPC namespace without strict control can lead to security risks and potential privilege escalations.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_3#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of hostIPC in containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for hostIPC containers should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_hostNetwork_containers",
+    "CheckTitle": "Minimize the admission of containers wishing to share the host network namespace",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers that share the host's network namespace. Containers with hostNetwork can access local network traffic and other pods, potentially leading to security risks.",
+    "Risk": "Allowing containers to share the host's network namespace without strict control can lead to security risks and potential network breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_4#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of hostNetwork in containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for hostNetwork containers should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_hostPID_containers",
+    "CheckTitle": "Minimize the admission of containers wishing to share the host process ID namespace",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers that share the host's process ID namespace. Containers with hostPID can inspect and interact with processes outside of the container, potentially leading to privilege escalation.",
+    "Risk": "Allowing containers to share the host's PID namespace without strict control can lead to security risks and potential privilege escalations.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_1#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of hostPID in containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for hostPID containers should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_net_raw_capability_admission",
+    "CheckTitle": "Minimize the admission of containers with the NET_RAW capability",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers with the potentially dangerous NET_RAW capability, which can be exploited by malicious containers.",
+    "Risk": "Allowing containers with NET_RAW capability increases the risk of network attacks and privilege escalation.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/configure-pod-container/security-context",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_6#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of NET_RAW capability through admission control policies.",
+        "Url": "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-capabilities-for-a-container"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for NET_RAW capability should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_privileged_containers",
+    "CheckTitle": "Minimize the admission of privileged containers",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of privileged containers, which have access to all Linux Kernel capabilities and devices. The use of privileged containers should be controlled and restricted to specific use-cases.",
+    "Risk": "Permitting privileged containers by default can lead to security vulnerabilities as these containers have elevated privileges equivalent to the host.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_2#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of privileged containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for privileged containers should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_minimize_root_containers_admission",
+    "CheckTitle": "Minimize the admission of root containers",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that Kubernetes clusters are configured to minimize the admission of containers running as the root user. Running containers as root increases the risk of container breakout and should be restricted.",
+    "Risk": "Allowing containers to run as root can lead to elevated risk of security breaches and container breakout.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_5#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the use of root containers through admission control policies.",
+        "Url": "https://kubernetes.io/docs/concepts/security/pod-security-standards/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Exceptions for root containers should be clearly defined and monitored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_no_secrets_envs",
+    "CheckTitle": "Prefer using secrets as files over secrets as environment variables",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesSecrets",
+    "ResourceGroup": "security",
+    "Description": "This check ensures that secrets in Kubernetes are used as files rather than environment variables. Using secrets as files is safer, as it reduces the risk of exposing sensitive data through application logs.",
+    "Risk": "Secrets exposed as environment variables can be inadvertently logged by applications, leading to potential security breaches.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_33#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Minimize the use of environment variable secrets and prefer mounting secrets as files for enhanced security.",
+        "Url": "https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-over-environment-variables"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Mounting secrets as files allows for dynamic updates of secrets without needing to restart the pod."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "core_seccomp_profile_docker_default",
+    "CheckTitle": "Ensure that the seccomp profile is set to docker/default in your pod definitions",
+    "CheckType": [],
+    "ServiceName": "core",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesPod",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the docker/default seccomp profile is enabled in pod definitions. Enabling seccomp profiles helps restrict the set of system calls applications can make, enhancing the security of workloads in the cluster.",
+    "Risk": "Not using or incorrectly configuring seccomp profiles can leave containers with broader permissions, increasing the risk of malicious actions.",
+    "RelatedUrl": "https://kubernetes.io/docs/tutorials/clusters/seccomp/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/bc_k8s_30#kubernetes",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Implement the docker/default seccomp profile in pod definitions for enhanced container security.",
+        "Url": "https://docs.docker.com/engine/security/seccomp/"
+      }
+    },
+    "Categories": [
+      "container-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The docker/default seccomp profile may need to be adjusted if it's too restrictive for certain applications."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_client_cert_auth",
+    "CheckTitle": "Etcd pod has client certificate authentication enabled (--client-cert-auth=true)",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd** is configured to require **TLS client certificate authentication** when the etcd container includes `--client-cert-auth`, so client access is validated with trusted certificates.",
+    "Risk": "Without **mTLS client auth**, any reachable client can query or mutate etcd:\n- Confidentiality: exposure of Secrets and cluster metadata\n- Integrity: tampering with RBAC, pods, and configs\n- Availability: destructive writes can disrupt the control plane",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\n# Enable client certificate authentication on etcd\nresource \"kubernetes_pod\" \"\u003cexample_resource_name\u003e\" {\n  metadata {\n    name      = \"\u003cexample_resource_name\u003e\"\n    namespace = \"kube-system\"\n  }\n  spec {\n    container {\n      name  = \"etcd\"\n      image = \"gcr.io/etcd-development/etcd:v3.5.13\"\n      command = [\n        \"etcd\",\n        \"--client-cert-auth=true\" # Critical: enables client cert auth to pass the check\n      ]\n    }\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. SSH to the control plane node that runs etcd\n2. Edit the static pod manifest: /etc/kubernetes/manifests/etcd.yaml\n3. Under spec.containers[0].command (or args), add:\n   ```\n   - --client-cert-auth=true  # Critical: enables client certificate authentication\n   ```\n4. Save the file; kubelet will restart the etcd pod automatically\n5. Repeat on each control-plane node hosting an etcd pod"
+      },
+      "Recommendation": {
+        "Text": "Enforce **mutual TLS** for etcd clients by requiring validated certificates (`--client-cert-auth=true`) issued by a trusted CA.\n\nRestrict network access to etcd to API servers, rotate keys regularly, and apply **least privilege** and **separation of duties** for certificate management.",
+        "Url": "https://hub.prowler.com/check/etcd_client_cert_auth"
+      }
+    },
+    "AdditionalURLs": [
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+    ],
+    "Categories": [
+      "cluster-security",
+      "identity-access",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that all clients communicating with etcd have valid certificates."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_no_auto_tls",
+    "CheckTitle": "Etcd pod has --auto-tls disabled",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd** configuration is reviewed for the `--auto-tls` option, which enables automatically generated self-signed certificates for client TLS.\n\nPresence of this flag indicates self-signed TLS is used; absence indicates client TLS relies on externally managed certificates.",
+    "Risk": "Using **self-signed auto TLS** weakens identity assurance, enabling spoofed endpoints and **man-in-the-middle** on etcd client traffic. Attackers could read or alter Kubernetes state in etcd, impacting **confidentiality** and **integrity**, and facilitating control-plane takeover or data exfiltration.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. SSH to the control plane node running etcd\n2. Edit the static Pod manifest: sudo vi /etc/kubernetes/manifests/etcd.yaml\n3. In containers -\u003e command or args, remove any occurrence of --auto-tls or --auto-tls=true (do not set it to false)\n4. Save and exit; kubelet will recreate the etcd pod automatically\n5. Verify the flag is absent: kubectl -n kube-system get pod -l component=etcd -o yaml | grep -q \"auto-tls\" || echo \"PASS: --auto-tls not set\""
+      },
+      "Recommendation": {
+        "Text": "Disable `--auto-tls` and use **CA-signed certificates** with **mutual TLS** for etcd clients. Apply managed PKI to enforce trusted CAs, rotate and revoke keys, and prefer modern TLS versions and strong cipher suites. Monitor certificate expiry and limit access per **least privilege** for **defense in depth**.",
+        "Url": "https://hub.prowler.com/check/etcd_no_auto_tls"
+      }
+    },
+    "AdditionalURLs": [
+      "https://kubernetes.io/docs/tasks/tls/managing-tls-in-a-cluster/",
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://etcd.io/docs/v3.2/op-guide/security/"
+    ],
+    "Categories": [
+      "encryption",
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Self-signed certificates should be replaced with certificates from a trusted certificate authority."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_no_peer_auto_tls",
+    "CheckTitle": "Etcd pod does not use automatically generated self-signed certificates for peer TLS connections",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd peer TLS** configuration is evaluated by checking etcd containers for the `--peer-auto-tls` flag. Presence of `--peer-auto-tls` indicates peers use automatically generated self-signed certificates for inter-peer connections.",
+    "Risk": "With `--peer-auto-tls`, traffic is encrypted but peer identity isn't verified, enabling:\n- MITM on peer links\n- Rogue member joins to read/modify data\n- Quorum disruption\n\nThis degrades **confidentiality**, **integrity**, and **availability** of control-plane state replicated in etcd.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. SSH to the control-plane node running etcd\n2. Open /etc/kubernetes/manifests/etcd.yaml\n3. In the etcd container args/command, remove any entry that starts with --peer-auto-tls\n4. Save the file; the kubelet will restart etcd automatically"
+      },
+      "Recommendation": {
+        "Text": "Disable `--peer-auto-tls` and use **mTLS** with a trusted CA issuing unique per-member peer certificates. Enforce SAN validation and, *where supported*, peer certificate authentication. Apply **least privilege**, separate CAs for peers/clients, rotate keys, and monitor certificate expiry and peer membership.",
+        "Url": "https://hub.prowler.com/check/etcd_no_peer_auto_tls"
+      }
+    },
+    "AdditionalURLs": [
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://etcd.io/docs/v3.4/op-guide/security/",
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/"
+    ],
+    "Categories": [
+      "encryption",
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This check is applicable only for etcd clusters. For single etcd server setups, this recommendation does not apply."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_peer_client_cert_auth",
+    "CheckTitle": "Etcd pod has peer client certificate authentication enabled",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd** requires **peer client certificate authentication** for inter-member traffic via `--peer-client-cert-auth=true` set in the etcd container command",
+    "Risk": "Without peer authentication, a rogue host can impersonate a member, eavesdrop on or alter Raft traffic, inject state, and disrupt elections-compromising **confidentiality** (state leakage), **integrity** (malicious writes), and **availability** (cluster instability/outage).",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"kubernetes_pod\" \"\u003cexample_resource_name\u003e\" {\n  metadata {\n    name      = \"\u003cexample_resource_name\u003e\"\n    namespace = \"kube-system\"\n  }\n  spec {\n    container {\n      name    = \"etcd\"\n      image   = \"registry.k8s.io/etcd:3.5.12-0\"\n      command = [\n        \"etcd\",\n        \"--peer-client-cert-auth=true\"  # Critical: enables peer client certificate authentication for peer traffic\n      ]\n    }\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. SSH to the control-plane node\n2. Edit the etcd static Pod manifest: /etc/kubernetes/manifests/etcd.yaml\n3. In spec.containers[0].command, add this entry:\n   - --peer-client-cert-auth=true\n   (Critical: enables peer client certificate authentication)\n4. Save the file; the kubelet will automatically restart the etcd Pod\n5. Verify the Pod's container command includes --peer-client-cert-auth=true"
+      },
+      "Recommendation": {
+        "Text": "Enforce **mTLS** for etcd peers with client certificate auth. Use a dedicated CA, validate SANs, and apply **least privilege** to issued certs. Rotate and revoke certificates regularly, restrict network access to peer ports, and avoid auto-generated self-signed peer TLS to maintain strong identity assurance.",
+        "Url": "https://hub.prowler.com/check/etcd_peer_client_cert_auth"
+      }
+    },
+    "AdditionalURLs": [
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://etcd.io/docs/v3.6/op-guide/configuration/",
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#limiting-access-of-etcd-clusters"
+    ],
+    "Categories": [
+      "cluster-security",
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This check is applicable only for etcd clusters. For single etcd server setups, this recommendation does not apply."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_peer_tls_config",
+    "CheckTitle": "Etcd pod uses TLS for peer connections",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd peer communication** is treated as secure when **TLS** is configured with a peer certificate and key (e.g., `--peer-cert-file` and `--peer-key-file`). The assessment inspects etcd containers for these options to determine whether server-to-server traffic is encrypted and authenticated.",
+    "Risk": "Without **TLS** on peer links, attackers can intercept or alter Raft traffic, enabling node impersonation and **consensus manipulation**. This endangers **confidentiality** (exposed cluster state), **integrity** (tampered writes), and **availability** (quorum disruption), cascading into control-plane instability.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"kubernetes_pod\" \"\u003cexample_resource_name\u003e\" {\n  metadata {\n    name = \"\u003cexample_resource_name\u003e\"\n  }\n  spec {\n    container {\n      name  = \"etcd\"\n      image = \"quay.io/coreos/etcd:latest\"\n      command = [\n        \"etcd\",\n        \"--peer-cert-file=\u003c/path/to/peer-cert-file\u003e\", # Critical: enables TLS for peer connections\n        \"--peer-key-file=\u003c/path/to/peer-key-file\u003e\"   # Critical: key for the peer TLS cert\n      ]\n    }\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. SSH to the control plane node running etcd\n2. Open /etc/kubernetes/manifests/etcd.yaml\n3. Under spec.containers[0].command add:\n   - --peer-cert-file=\u003c/path/to/peer-cert-file\u003e\n   - --peer-key-file=\u003c/path/to/peer-key-file\u003e\n4. Save the file; kubelet will restart the etcd Pod automatically\n5. Verify the etcd container command includes both flags"
+      },
+      "Recommendation": {
+        "Text": "Enforce **TLS** for etcd peer communication with unique certificates per member and mutual authentication. Apply strong cipher suites and modern protocol versions, rotate keys, and separate CAs for peers and clients. Limit network access to peer ports to trusted nodes, following **least privilege** and **defense in depth**.",
+        "Url": "https://hub.prowler.com/check/etcd_peer_tls_config"
+      }
+    },
+    "AdditionalURLs": [
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#securing-communication"
+    ],
+    "Categories": [
+      "encryption",
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This check is only applicable for etcd clusters. For single etcd server setups, this recommendation does not apply."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_tls_encryption",
+    "CheckTitle": "Etcd pod has TLS encryption configured",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd pods** are assessed for **TLS-enabled client communication**, indicated by `--cert-file` and `--key-file` in container arguments, showing that Kubernetes API state traffic is encrypted in transit.",
+    "Risk": "Without **TLS**, etcd traffic is exposed on the network, weakening CIA:\n- Confidentiality: leakage of **secrets** and cluster state\n- Integrity: **MITM** can alter configs, roles, and objects\n- Availability: control-plane instability from tampered responses",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. SSH to the control-plane node\n2. Open /etc/kubernetes/manifests/etcd.yaml\n3. In spec.containers[0].command add:\n   - --cert-file=/etc/kubernetes/pki/etcd/server.crt\n   - --key-file=/etc/kubernetes/pki/etcd/server.key\n4. Save the file; kubelet will automatically restart the etcd Pod\n5. Confirm the etcd container command now includes both --cert-file and --key-file"
+      },
+      "Recommendation": {
+        "Text": "Enforce **mTLS** for etcd client and peer traffic and disable plaintext listeners. Restrict access to etcd to control-plane components via tight network policies and firewalls. Use strong TLS versions/ciphers, rotate certificates, and safeguard keys, applying **least privilege** and **defense in depth**.",
+        "Url": "https://hub.prowler.com/check/etcd_tls_encryption"
+      }
+    },
+    "AdditionalURLs": [
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/",
+      "https://etcd.io/docs/latest/op-guide/security/"
+    ],
+    "Categories": [
+      "encryption",
+      "cluster-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, etcd may not be configured with TLS encryption. It is crucial to enable TLS to protect the sensitive data handled by etcd."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "etcd_unique_ca",
+    "CheckTitle": "Etcd pod uses a unique Certificate Authority distinct from the Kubernetes API server CA",
+    "CheckType": [],
+    "ServiceName": "etcd",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "**Etcd** configuration is assessed to ensure it trusts a **unique Certificate Authority** via `--trusted-ca-file`, distinct from the API server's `--client-ca-file`. If the same CA file is used, etcd shares the cluster CA; differing files imply separation, though CA content should still be verified.",
+    "Risk": "Using the Kubernetes CA for etcd allows any cert signed by that CA to authenticate to the datastore. Theft or mis-issuance enables unauthorized reads/writes, causing secret exposure (confidentiality), state tampering (integrity), and potential control-plane disruption (availability).",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. SSH to a control-plane node that runs etcd\n2. Open the API server manifest: sudo vi /etc/kubernetes/manifests/kube-apiserver.yaml and note the value of --client-ca-file=\u003cAPISERVER_CA_PATH\u003e\n3. Ensure an etcd-specific CA file exists at a different path (for example: /etc/kubernetes/pki/etcd/ca.crt) and is readable by the etcd container\n4. Edit the etcd manifest: sudo vi /etc/kubernetes/manifests/etcd.yaml\n   - In the etcd container command/args, add or update: --trusted-ca-file=/etc/kubernetes/pki/etcd/ca.crt (this path must NOT equal \u003cAPISERVER_CA_PATH\u003e)\n   - Save the file; the kubelet will restart the etcd pod automatically\n5. Verify the change: kubectl -n kube-system get pods -o wide | grep etcd, then describe the etcd pod and confirm --trusted-ca-file points to a different path than the API server --client-ca-file"
+      },
+      "Recommendation": {
+        "Text": "Adopt a **separate PKI** for etcd: issue client and peer certs from an etcd-only CA and trust only that CA. Enforce mTLS (`--client-cert-auth`, `--peer-client-cert-auth`), avoid `--auto-tls`, rotate keys independently, and apply **least privilege** to CA issuance with regular certificate audits.",
+        "Url": "https://hub.prowler.com/check/etcd_unique_ca"
+      }
+    },
+    "AdditionalURLs": [
+      "https://etcd.io/docs/latest/op-guide/security/",
+      "https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#limiting-access-of-etcd-clusters"
+    ],
+    "Categories": [
+      "encryption",
+      "cluster-security",
+      "trust-boundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This check is particularly important in environments where strict access control to the etcd database is required."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_authorization_mode",
+    "CheckTitle": "Ensure that the kubelet --authorization-mode argument is not set to AlwaysAllow",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that kubelets are not set to use the 'AlwaysAllow' authorization mode, which would allow all authenticated requests without explicit authorization.",
+    "Risk": "Setting --authorization-mode to AlwaysAllow can lead to unauthorized access to kubelet services.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "--authorization-mode=Webhook",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure kubelet is configured with an authorization mode other than AlwaysAllow.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/#kubelet-authorization"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Verify the authorization mode in both kubelet service files and configuration files."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_client_ca_file_set",
+    "CheckTitle": "Ensure that the kubelet --client-ca-file argument is set as appropriate",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the kubelet is configured with the --client-ca-file argument to enable authentication using certificates. This configuration is essential to secure the connections from the apiserver to the kubelet.",
+    "Risk": "If --client-ca-file is not set, the apiserver cannot authenticate the kubelet, potentially leading to man-in-the-middle attacks.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "--client-ca-file=/path/to/ca-file",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure Kubelet with a client CA file for secure authentication.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/#kubelet-authorization"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure the client CA file is properly managed and securely stored."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_conf_file_ownership",
+    "CheckTitle": "Ensure kubelet.conf file ownership is set to root:root",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesWorkerNode",
+    "ResourceGroup": "container",
+    "Description": "Ensure that the kubelet.conf file, which is the kubeconfig file for the node, has its file ownership set to root:root. This check verifies the proper ownership settings to maintain the security and integrity of the node's configuration.",
+    "Risk": "Incorrect file ownership settings on kubelet.conf can lead to unauthorized access and potential security vulnerabilities.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chown root:root /etc/kubernetes/kubelet.conf",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure kubelet.conf file ownership is correctly set to protect the node's configuration.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regular checks of kubelet.conf file ownership are essential for maintaining node security."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_conf_file_permissions",
+    "CheckTitle": "Ensure kubelet.conf file permissions are set to 600 or more restrictive",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesWorkerNode",
+    "ResourceGroup": "container",
+    "Description": "Ensure that the kubelet.conf file, which is the kubeconfig file for the node, has permissions set to 600 or more restrictive. This ensures the integrity and security of the node's configuration.",
+    "Risk": "Improper permissions on kubelet.conf can expose sensitive configuration data, potentially leading to cluster security compromises.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chmod 600 /etc/kubernetes/kubelet.conf",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure kubelet.conf file permissions are correctly set to protect the node's configuration.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regular checks of kubelet.conf file permissions are essential for maintaining node security."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_config_yaml_ownership",
+    "CheckTitle": "Validate kubelet config.yaml File Ownership",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesWorkerNode",
+    "ResourceGroup": "container",
+    "Description": "Ensure that if the kubelet refers to a configuration file with the --config argument, that file is owned by root:root. The kubelet config file contains various critical parameters for the kubelet service on worker nodes, and its ownership should be strictly controlled.",
+    "Risk": "Improper file ownership on kubelet config.yaml can expose sensitive data or allow unauthorized modifications.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chown root:root /var/lib/kubelet/config.yaml",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Secure the kubelet configuration by enforcing strict file ownership.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regularly verify the file ownership of kubelet config files to ensure they are not altered unexpectedly."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_config_yaml_permissions",
+    "CheckTitle": "Validate kubelet config.yaml File Permissions",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesWorkerNode",
+    "ResourceGroup": "container",
+    "Description": "Ensure that if the kubelet refers to a configuration file with the --config argument, that file has permissions of 600 or more restrictive. The kubelet config file contains various critical parameters for the kubelet service on worker nodes, and its permissions should be strictly controlled.",
+    "Risk": "Improper file permissions on kubelet config.yaml can expose sensitive data or allow unauthorized modifications.",
+    "RelatedUrl": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chmod 600 /var/lib/kubelet/config.yaml",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Secure the kubelet configuration by enforcing strict file permissions.",
+        "Url": "https://kubernetes.io/docs/tasks/administer-cluster/kubelet-config-file/"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regularly verify the file permissions of kubelet config files to ensure they are not altered unexpectedly."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_disable_anonymous_auth",
+    "CheckTitle": "Ensure that the --anonymous-auth argument is set to false",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that anonymous requests to the Kubelet server are disabled by setting the --anonymous-auth argument to false. Disabling anonymous requests enhances the security by ensuring that all requests are authenticated and authorized.",
+    "Risk": "Enabling anonymous requests can lead to unauthorized access to Kubelet APIs and potentially sensitive cluster data.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/#kubelet-authorization",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "--anonymous-auth=false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that anonymous requests to the Kubelet server are disabled for enhanced cluster security.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-authn-authz/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regularly review Kubelet configurations to ensure compliance with security best practices."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_disable_read_only_port",
+    "CheckTitle": "Verify that the kubelet --read-only-port argument is set to 0",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the read-only port of the Kubelet is disabled by verifying that the --read-only-port argument is set to 0. Disabling the read-only port is crucial to prevent unauthenticated access to sensitive cluster data.",
+    "Risk": "If the read-only port is open, it could allow unauthenticated access to sensitive cluster information.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-read-only-port-argument-is-set-to-0",
+        "Terraform": "",
+        "CLI": "--read-only-port=0",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable the read-only port in the kubelet for enhanced cluster security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/#options"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure that any services relying on the read-only port are reconfigured to use the main Kubelet API."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_event_record_qps",
+    "CheckTitle": "Ensure that the kubelet eventRecordQPS argument is set to an appropriate level",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubelet is configured with an appropriate eventRecordQPS level. The eventRecordQPS parameter limits the rate at which events are gathered, ensuring important security events are not missed while preventing potential denial-of-service conditions.",
+    "Risk": "An inappropriate eventRecordQPS setting could lead to missing vital security events or DoS conditions.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-event-qps-argument-is-set-to-0-or-a-level-which-ensures-appropriate-event-capture",
+        "Terraform": "",
+        "CLI": "--event-qps=\u003cappropriate_level\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure kubelet with a balanced eventRecordQPS setting for effective event capture without causing DoS conditions.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/#options"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Consider the specific needs and capacity of your environment when setting eventRecordQPS."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_manage_iptables",
+    "CheckTitle": "Ensure that the kubelet --make-iptables-util-chains argument is set to true",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubelet is configured to manage iptables, which keeps the iptables configuration in sync with the dynamic pod network configuration. Allowing the Kubelet to manage iptables helps to avoid network communication issues between pods/containers.",
+    "Risk": "If kubelet does not manage iptables, manual configurations might conflict with dynamic pod networking, causing communication issues.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-make-iptables-util-chains-argument-is-set-to-true",
+        "Terraform": "",
+        "CLI": "--make-iptables-util-chains=true",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable kubelet management of iptables for consistent network configuration.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/#options"
+      }
+    },
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "If you are using another iptables management solution, ensure it is compatible with the kubelet's management of iptables."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_rotate_certificates",
+    "CheckTitle": "Ensure that the kubelet client certificate rotation is enabled",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the kubelet client certificate rotation is enabled, allowing for automated periodic rotation of credentials, thereby addressing availability concerns in the security triad. This is crucial for avoiding downtime due to expired certificates.",
+    "Risk": "Not enabling kubelet client certificate rotation may lead to service interruptions due to expired certificates, compromising the availability of the node.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-rotate-certificates-argument-is-not-set-to-false",
+        "Terraform": "",
+        "CLI": "--rotate-certificates=true",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable kubelet client certificate rotation for automated renewal of credentials.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/#certificate-rotation"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Applicable if kubelets receive certificates from the API server. If using an external authority/tool for certificates, ensure rotation is handled appropriately."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_service_file_ownership_root",
+    "CheckTitle": "Ensure that the kubelet service file ownership is set to root:root",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesWorkerNode",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the kubelet service file on each Node is owned by root. Proper file ownership is critical for the security and integrity of the kubelet service configuration.",
+    "Risk": "Incorrect ownership settings can lead to unauthorized modifications, potentially compromising the security and functionality of the kubelet service.",
+    "RelatedUrl": "https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/kubelet-integration/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chown root:root /etc/systemd/system/kubelet.service.d/kubeadm.conf",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Set the kubelet service file ownership to root:root to maintain its integrity.",
+        "Url": "https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-config/"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Regular checks for file ownership can prevent unauthorized changes."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_service_file_permissions",
+    "CheckTitle": "Ensure that the kubelet service file permissions are set to 600 or more restrictive",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesNode",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the kubelet service file on worker nodes has permissions set to 600 or more restrictive, limiting the file's write access to only system administrators. This measure is crucial to maintain the integrity and security of the kubelet service configuration.",
+    "Risk": "Improper file permissions on the kubelet service file could lead to unauthorized modifications, compromising node security and stability.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/setup-tools/kubeadm/kubeadm-config/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "chmod 600 /etc/systemd/system/kubelet.service.d/kubeadm.conf",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure the kubelet service file is securely configured with restrictive permissions.",
+        "Url": "https://kubernetes.io/docs/setup/independent/create-cluster-kubeadm/#44-joining-your-nodes"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "The file location may vary based on the Kubernetes installation and should be verified for each cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_streaming_connection_timeout",
+    "CheckTitle": "Ensure that the kubelet --streaming-connection-idle-timeout argument is not set to 0",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubelet is configured with a non-zero timeout for streaming connections. Setting a non-zero timeout helps protect against Denial-of-Service attacks and resource exhaustion due to idle connections.",
+    "Risk": "A zero timeout on streaming connections can lead to Denial-of-Service attacks and resource exhaustion.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-streaming-connection-idle-timeout-argument-is-not-set-to-0",
+        "Terraform": "",
+        "CLI": "--streaming-connection-idle-timeout=\u003cnon-zero value\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure a non-zero timeout for streaming connections in kubelet to enhance node security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/#options"
+      }
+    },
+    "Categories": [
+      "node-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Consider your environment's specific use cases to set an appropriate timeout value. The default value is 4 hours."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_strong_ciphers_only",
+    "CheckTitle": "Ensure that the Kubelet only makes use of Strong Cryptographic Ciphers",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check verifies that the kubelet is configured to use only strong cryptographic ciphers. Ensuring the use of strong ciphers is essential to minimize the risk of vulnerabilities and enhance the security of TLS connections to the kubelet.",
+    "Risk": "Using weak ciphers can expose the kubelet to cryptographic attacks, compromising the security of data in transit.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-kubelet-only-makes-use-of-strong-cryptographic-ciphers",
+        "Terraform": "",
+        "CLI": "--tls-cipher-suites=TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,...",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict the kubelet to only use strong cryptographic ciphers for enhanced security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet/#options"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "This list of ciphers may need to be updated based on evolving security standards and client compatibility."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "kubelet_tls_cert_and_key",
+    "CheckTitle": "Ensure that the kubelet TLS certificate and private key are set appropriately",
+    "CheckType": [],
+    "ServiceName": "kubelet",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "KubernetesKubelet",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that each Kubelet is configured with a TLS certificate and private key for secure connections. These settings are crucial for preventing man-in-the-middle attacks and ensuring secure communication between the apiserver and kubelets.",
+    "Risk": "Not setting the kubelet's TLS certificate and private key can expose the node to security vulnerabilities and interception of sensitive data.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-tls-cert-file-and-tls-private-key-file-arguments-are-set-as-appropriate-for-kubelet",
+        "Terraform": "",
+        "CLI": "--tls-cert-file=\u003cpath/to/tls-certificate-file\u003e --tls-private-key-file=\u003cpath/to/tls-key-file\u003e",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Configure each kubelet with its own TLS certificate and private key for secure connections.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-bootstrapping/#client-and-serving-certificates"
+      }
+    },
+    "Categories": [
+      "encryption",
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure each kubelet has a unique TLS certificate and key for enhanced security."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_cluster_admin_usage",
+    "CheckTitle": "Ensure that the cluster-admin role is only used where required",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "ClusterRoleBinding",
+    "ResourceGroup": "IAM",
+    "Description": "This check ensures that the 'cluster-admin' role, which provides wide-ranging powers, is used only where necessary. The 'cluster-admin' role grants super-user access to perform any action on any resource, including all namespaces. It should be applied cautiously to avoid excessive privileges.",
+    "Risk": "Inappropriate use of the 'cluster-admin' role can lead to excessive privileges, increasing the risk of malicious actions and potentially impacting the cluster's security posture.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/#user-facing-roles",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Audit and assess the use of 'cluster-admin' role in all ClusterRoleBindings. Ensure it is assigned only to subjects that require such extensive privileges. Consider using more restrictive roles wherever possible.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/#clusterrolebinding-example"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Modifying ClusterRoleBindings should be done with caution to avoid unintended access issues. Always ensure that critical system components have the necessary permissions to operate effectively."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_csr_approval_access",
+    "CheckTitle": "Minimize access to the approval sub-resource of certificatesigningrequests objects",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "CertificateSigningRequestApproval",
+    "ResourceGroup": "security",
+    "Description": "This check ensures that access to the approval sub-resource of certificate signing request (CSR) objects is restricted. Access to update the approval sub-resource can lead to privilege escalation, allowing creation of new high-privileged user accounts in the cluster.",
+    "Risk": "Unauthorized access to update the approval sub-resource of CSR objects can lead to significant security vulnerabilities, including unauthorized user creation and privilege escalation.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#csrs-and-certificate-issuing",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-clusterroles-that-grant-permissions-to-approve-certificatesigningrequests-are-minimized",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to the approval sub-resource of CSR objects in the cluster.",
+        "Url": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#csrs-and-certificate-issuing"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Carefully evaluate which users or service accounts require the ability to update the approval sub-resource of CSR objects."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_node_proxy_subresource_access",
+    "CheckTitle": "Minimize access to the proxy sub-resource of nodes",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "NodeProxySubResource",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that access to the proxy sub-resource of node objects is restricted. Access to this sub-resource can grant privileges to use the Kubelet API directly, bypassing Kubernetes API controls like audit logging and admission control, potentially leading to privilege escalation.",
+    "Risk": "Unauthorized access to the proxy sub-resource of node objects can lead to significant security vulnerabilities, including privilege escalation.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#access-to-proxy-subresource-of-nodes",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to the proxy sub-resource of node objects in the cluster.",
+        "Url": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#access-to-proxy-subresource-of-nodes"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Carefully evaluate which users or service accounts require the ability to access the proxy sub-resource of node objects."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_pod_creation_access",
+    "CheckTitle": "Minimize access to create pods",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Pod",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the ability to create pods in a Kubernetes cluster is restricted to a minimal group of users. Limiting pod creation access mitigates the risk of privilege escalation and exposure of sensitive data.",
+    "Risk": "Unrestricted access to create pods can lead to potential security risks and privilege escalation within the cluster.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict pod creation access to minimize security risks.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Care should be taken to ensure that restrictions do not disrupt normal operations of the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_pv_creation_access",
+    "CheckTitle": "Minimize access to create persistent volumes",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "PersistentVolume",
+    "ResourceGroup": "storage",
+    "Description": "This check ensures that the ability to create persistent volumes in Kubernetes is restricted to authorized users only. Limiting this capability helps prevent privilege escalation scenarios through the creation of hostPath volumes.",
+    "Risk": "Excessive permissions to create persistent volumes can lead to unauthorized access to sensitive host files, overriding the restrictions imposed by Pod Security Admission policies.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#persistent-volume-creation",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to create persistent volumes in the cluster.",
+        "Url": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#persistent-volume-creation"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Carefully evaluate which users or service accounts require the ability to create PersistentVolumes and restrict access accordingly."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_secret_access",
+    "CheckTitle": "Minimize access to secrets",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Secrets",
+    "ResourceGroup": "security",
+    "Description": "This check ensures that access to secrets in the Kubernetes API is restricted to the smallest possible group of users. Minimizing access to secrets helps in reducing the risk of privilege escalation and potential unauthorized access to sensitive data.",
+    "Risk": "Inappropriate access to secrets can lead to escalation of privileges and unauthorized access to cluster resources or external resources managed through the secrets.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/configuration/secret/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/no-serviceaccountnode-should-be-able-to-read-all-secrets",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to Kubernetes secrets to the smallest possible set of users.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/"
+      }
+    },
+    "Categories": [
+      "trustboundaries",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Care should be taken to avoid disrupting system components that require access to secrets for proper functioning."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_service_account_token_creation",
+    "CheckTitle": "Minimize access to the service account token creation",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "ServiceAccountToken",
+    "ResourceGroup": "IAM",
+    "Description": "This check ensures that access to create new service account tokens is restricted within the Kubernetes cluster. Unrestricted token creation can lead to privilege escalation and persistent unauthorized access to the cluster.",
+    "Risk": "Granting excessive permissions for service account token creation can lead to abuse and compromise of cluster security.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#token-request",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to service account token creation in the cluster.",
+        "Url": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#token-request"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Consider using role-based access control to precisely define and manage permissions related to service account token creation."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_webhook_config_access",
+    "CheckTitle": "Minimize access to webhook configuration objects",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "WebhookConfiguration",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that access to webhook configuration objects (validatingwebhookconfigurations and mutatingwebhookconfigurations) is restricted. Unauthorized access or modification of these objects can lead to privilege escalation or disruption of cluster operations.",
+    "Risk": "Inadequately restricted access to webhook configurations can result in unauthorized control over webhooks, potentially allowing privilege escalation or interference with cluster functionality.",
+    "RelatedUrl": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#control-admission-webhooks",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-clusterroles-that-grant-control-over-validating-or-mutating-admission-webhook-configurations-are-minimized",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Restrict access to webhook configuration objects in the cluster.",
+        "Url": "https://kubernetes.io/docs/concepts/security/rbac-good-practices/#control-admission-webhooks"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Consider using role-based access control to precisely define and manage permissions related to webhook configurations."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "rbac_minimize_wildcard_use_roles",
+    "CheckTitle": "Minimize wildcard use in Roles and ClusterRoles",
+    "CheckType": [],
+    "ServiceName": "rbac",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Role/ClusterRole",
+    "ResourceGroup": "IAM",
+    "Description": "This check ensures that Roles and ClusterRoles in Kubernetes minimize the use of wildcards. Restricting wildcards enhances security by enforcing the principle of least privilege, ensuring users have only the access required for their role.",
+    "Risk": "Use of wildcards can lead to excessive rights being granted, potentially allowing users to access or modify resources beyond their scope of responsibility.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-minimized-wildcard-use-in-roles-and-clusterroles",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Replace wildcards in roles and clusterroles with specific permissions.",
+        "Url": "https://kubernetes.io/docs/reference/access-authn-authz/rbac/#referring-to-resources"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Care should be taken to ensure that replacing wildcards does not disrupt normal operations of the cluster."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "scheduler_bind_address",
+    "CheckTitle": "Ensure that the --bind-address argument is set to 127.0.0.1 for the Scheduler",
+    "CheckType": [],
+    "ServiceName": "scheduler",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesScheduler",
+    "ResourceGroup": "container",
+    "Description": "This check ensures that the Kubernetes Scheduler is bound to the loopback address (127.0.0.1) to minimize the cluster's attack surface. Binding to the loopback address prevents unauthorized network access to the Scheduler's health and metrics information.",
+    "Risk": "Binding the Scheduler to a non-loopback address exposes sensitive health and metrics information without authentication or encryption.",
+    "RelatedUrl": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-bind-address-argument-is-set-to-127001-1",
+        "Terraform": "",
+        "CLI": "--bind-address=127.0.0.1",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Bind the Scheduler to the loopback address for enhanced security.",
+        "Url": "https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/"
+      }
+    },
+    "Categories": [
+      "internet-exposed"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "Ensure compatibility with the Kubernetes version in use, as command-line flags may differ."
+  },
+  {
+    "Provider": "kubernetes",
+    "CheckID": "scheduler_profiling",
+    "CheckTitle": "Ensure that the --profiling argument is set to false",
+    "CheckType": [],
+    "ServiceName": "scheduler",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "KubernetesScheduler",
+    "ResourceGroup": "container",
+    "Description": "Disable profiling in the Kubernetes Scheduler unless it is needed for troubleshooting. Profiling can reveal detailed system and application performance data, which might be exploited if exposed. Turning off profiling reduces the potential attack surface and performance overhead.",
+    "Risk": "While profiling is useful for identifying performance issues, it generates detailed data that could potentially expose sensitive information about the system and its performance characteristics.",
+    "RelatedUrl": "https://github.com/kubernetes/community/blob/master/contributors/devel/profiling.md",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://docs.prowler.com/checks/kubernetes/kubernetes-policy-index/ensure-that-the-profiling-argument-is-set-to-false-2",
+        "Terraform": "",
+        "CLI": "--profiling=false",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "To minimize exposure to performance data and potential vulnerabilities, ensure the --profiling argument in the Kubernetes Scheduler is set to false.",
+        "Url": "https://kubernetes.io/docs/admin/kube-scheduler/"
+      }
+    },
+    "Categories": [
+      "trustboundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": "By default, profiling is enabled in Kubernetes Scheduler. Disabling it is a good security practice if profiling data is not needed for regular operations."
+  }
+]

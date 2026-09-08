@@ -1,0 +1,635 @@
+[
+  {
+    "Provider": "github",
+    "CheckID": "organization_default_repository_permission_strict",
+    "CheckTitle": "Organization base repository permission is read or none",
+    "CheckType": [],
+    "ServiceName": "organization",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GitHubOrganization",
+    "ResourceGroup": "governance",
+    "Description": "**GitHub organization** base repository permission for members uses a **strict setting** such as `read` or `none` rather than permissive options like `write` or `admin`. *Applies to members, not outside collaborators.*",
+    "Risk": "**Excessive default permissions** (`write`/`admin`) erode code **integrity** and **availability**.\n\nAny member-or a compromised account-can alter many repos, inject malicious commits, change tags/releases, or delete branches, enabling supply-chain compromise and large-scale disruptions.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"github_organization_settings\" \"\u003cexample_resource_name\u003e\" {\n  default_repository_permission = \"read\" # Critical: sets the org's base repository permission to a strict level (read/none passes)\n}\n```",
+        "CLI": "",
+        "Other": "1. Sign in to GitHub as an organization owner\n2. Go to the organization \u003e Settings\n3. Under \"Access\" in the sidebar, click \"Member privileges\"\n4. Under \"Base permissions\", select \"Read\" (or \"None\")\n5. Click \"Change default permission\" to confirm"
+      },
+      "Recommendation": {
+        "Text": "Apply **least privilege**: set base permission to `none` or `read`.\n\nGrant higher access explicitly via teams per repo and enforce **separation of duties** with required reviews and **branch protection**. Regularly audit memberships and access to limit blast radius and maintain **defense in depth**.",
+        "Url": "https://hub.prowler.com/check/organization_default_repository_permission_strict"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.github.com/en/organizations/managing-user-access-to-your-organizations-repositories/managing-repository-roles/setting-base-permissions-for-an-organization"
+    ],
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "organization_members_mfa_required",
+    "CheckTitle": "Organization requires members to have two-factor authentication enabled",
+    "CheckType": [],
+    "ServiceName": "organization",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "critical",
+    "ResourceType": "GitHubOrganization",
+    "ResourceGroup": "governance",
+    "Description": "GitHub organization settings require all members to use **two-factor authentication** (2FA).\n\nThe evaluation determines whether access to organization resources is conditioned on members having 2FA enabled.",
+    "Risk": "Without enforced **2FA**, stolen or reused passwords enable account takeover, leading to:\n- Loss of code integrity via unauthorized commits\n- Confidential data exposure from repos and secrets\n- Availability impact from settings changes, token revocation, or deletions",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "1. Sign in to GitHub as an organization owner with 2FA enabled\n2. Go to your organization \u003e Settings\n3. In the left sidebar, click Security \u003e Authentication security\n4. Under Two-factor authentication, select Require two-factor authentication for everyone in your organization\n5. Click Save, then Confirm"
+      },
+      "Recommendation": {
+        "Text": "Enforce org-wide **2FA** for all members and collaborators, preferring **secure methods** (passkeys, security keys, authenticator apps, GitHub Mobile) over SMS.\n\nApply **least privilege**, integrate with **SSO**, restrict token scopes, and use **branch protection** for defense-in-depth. Include bots/service accounts and define recovery options.",
+        "Url": "https://hub.prowler.com/check/organization_members_mfa_required"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/preparing-to-require-two-factor-authentication-in-your-organization",
+      "https://docs.github.com/en/organizations/keeping-your-organization-secure/managing-two-factor-authentication-for-your-organization/requiring-two-factor-authentication-in-your-organization"
+    ],
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "organization_repository_creation_limited",
+    "CheckTitle": "Ensure repository creation is limited to trusted organization members.",
+    "CheckType": [],
+    "ServiceName": "organization",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GitHubOrganization",
+    "ResourceGroup": "governance",
+    "Description": "Ensure that repository creation is restricted so that only trusted owners or specific teams can create new repositories within the organization.",
+    "Risk": "Allowing all members to create repositories increases the likelihood of shadow repositories, data leakage, or malicious projects being introduced without oversight.",
+    "RelatedUrl": "https://docs.github.com/en/organizations/managing-organization-settings/restricting-repository-creation-in-your-organization",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable repository creation for members or limit it to specific trusted teams by adjusting Member privileges in the organization's settings.",
+        "Url": "https://docs.github.com/en/organizations/managing-organization-settings/restricting-repository-creation-in-your-organization"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_branch_delete_on_merge_enabled",
+    "CheckTitle": "Check if a repository deletes the branch after merging",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository deletes the branch after merging.",
+    "Risk": "Inactive branches pose a security risk as they can accumulate outdated code, dependencies, and potential vulnerabilities over time. Malicious actors may exploit these branches, and they can clutter the repository, making it harder to manage and track the active code. Additionally, stale branches may unintentionally be accessed or used inappropriately, leading to potential security breaches.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Regularly review and remove inactive branches from your repositories. This helps reduce the risk of malicious code injection, sensitive data leaks, and unnecessary clutter in the repository. By keeping branches active and up to date, you ensure that your codebase remains secure and manageable.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/configuring-pull-request-merges/managing-the-automatic-deletion-of-branches"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_deletion_disabled",
+    "CheckTitle": "Check if a repository denies default branch deletion",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository denies default branch deletion.",
+    "Risk": "Allowing the deletion of protected branches by users with push access increases the risk of accidental or intentional branch removal, potentially resulting in significant data loss or disruption to the development process.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#allow-deletions",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Deny the ability to delete protected branches to ensure the preservation of critical branch data. This prevents accidental or malicious deletions and helps maintain the integrity and stability of the repository.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_disallows_force_push",
+    "CheckTitle": "Check if repository denies force push",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GithubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository denies force push to protected branches.",
+    "Risk": "Permitting force pushes to branches can lead to accidental or intentional overwrites of the commit history, resulting in potential data loss, code inconsistencies, or the introduction of malicious changes. This compromises the stability and security of the repository.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#allow-force-pushes",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Disable force pushes on protected branches to preserve the commit history and ensure the integrity of the repository. This measure helps prevent unintentional data loss and protects the repository from malicious changes.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_protection_applies_to_admins",
+    "CheckTitle": "Check if repository enforces admin branch protection",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GithubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository enforces branch protection rules for administrators.",
+    "Risk": "Excluding administrators from branch protection rules introduces a significant risk of unauthorized or unreviewed changes being pushed to protected branches. This can lead to vulnerabilities, including the potential insertion of malicious code, especially if an administrator account is compromised.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#do-not-allow-bypassing-the-above-settings",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enforce branch protection rules for administrators to ensure they adhere to the same security and quality standards as other users. This mitigates the risk of unreviewed or untrusted code being introduced, enhancing the overall integrity of the codebase.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_protection_enabled",
+    "CheckTitle": "Check if branch protection is enforced on the default branch ",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "critical",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure branch protection is enforced on the default branch",
+    "Risk": "The absence of branch protection on the default branch increases the risk of unauthorized, unreviewed, or untested changes being merged. This can compromise the stability, security, and reliability of the codebase, which is especially critical for production deployments.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Apply branch protection rules to the default branch to ensure it is safeguarded against unauthorized or improper modifications. This helps maintain code quality, enforces proper review and testing procedures, and reduces the risk of accidental or malicious changes.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule#creating-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_requires_codeowners_review",
+    "CheckTitle": "Check if code owner approval is required for changes to owned code",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that code owners are required to review and approve any proposed changes that affect their respective areas of ownership in the code base.",
+    "Risk": "If code owner approval is not required, unauthorized or unqualified individuals may merge changes to sensitive or critical areas of the codebase, increasing the risk of security vulnerabilities, bugs, or malicious modifications.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners#requiring-code-owner-review",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "To require code owner review, navigate to the repository settings, click on 'Branches', add or edit a branch protection rule, and enable 'Require review from Code Owners'.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-review-from-code-owners"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_requires_conversation_resolution",
+    "CheckTitle": "Check if repository requires conversation resolution before merging",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository requires conversation resolution before merging.",
+    "Risk": "Leaving comments unresolved before merging code can lead to overlooked issues, including potential bugs or security vulnerabilities, that might affect the quality and security of the codebase. Unaddressed concerns could result in a lower quality of code, increasing the risk of production failures or breaches.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-conversation-resolution-before-merging",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure that all comments in a code change proposal are resolved before merging. This guarantees that every reviewer’s concern is addressed, improving code quality and security by preventing issues from being ignored or overlooked.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_requires_linear_history",
+    "CheckTitle": "Check if repository default branch requires linear history",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "GithubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository default branch requires linear history.",
+    "Risk": "Allowing non-linear history can result in a cluttered and difficult-to-trace Git history, making it harder to identify specific changes, debug issues, and understand the sequence of development. This increases the risk of errors, inconsistencies, and bugs, especially in production environments.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-linear-history",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enforce a linear history by requiring rebase or squash merges for pull requests. This will create a clean, chronological commit history, making it easier to track changes, revert modifications, and troubleshoot any issues that arise.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_requires_multiple_approvals",
+    "CheckTitle": "Check if repositories require at least 2 code changes approvals",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that repositories require at least 2 code changes approvals before merging a pull request.",
+    "Risk": "If repositories do not require at least 2 code changes approvals before merging a pull request, it is possible that code changes are not being reviewed by multiple people, which could lead to the introduction of bugs or security vulnerabilities.",
+    "RelatedUrl": "https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/reviewing-changes-in-pull-requests/approving-a-pull-request-with-required-reviews",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "To require at least 2 code changes approvals before merging a pull request, navigate to the repository settings, click on 'Branches', and then 'Add rule'.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-pull-request-reviews-before-merging"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_requires_signed_commits",
+    "CheckTitle": "Check if repository requires signed commits",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "medium",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that every commit in a pull request is signed and verified before merging to the default branch.",
+    "Risk": "If repositories do not require signed commits, there is no way to verify the authenticity and integrity of code changes. This could allow malicious actors to impersonate legitimate contributors and introduce unauthorized or harmful changes to the codebase.",
+    "RelatedUrl": "https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable the 'Require signed commits' option in branch protection rules to ensure that all commits are cryptographically signed and verified before they can be merged.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-signed-commits"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_default_branch_status_checks_required",
+    "CheckTitle": "Check if repository enforces status checks to pass",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "GithubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that the repository enforces status checks to pass before merging code into the main branch.",
+    "Risk": "Merging code without requiring all checks to pass increases the risk of introducing bugs, vulnerabilities, or unstable changes into the codebase. This can compromise the quality, security, and functionality of the application.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches#require-status-checks-before-merging",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Require all predefined status checks to pass successfully before allowing code changes to be merged. This ensures that all quality, stability, and security conditions are met, reducing the likelihood of errors or vulnerabilities being introduced into the project.",
+        "Url": "https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/managing-a-branch-protection-rule"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_dependency_scanning_enabled",
+    "CheckTitle": "Check if package vulnerability scanning is enabled for dependencies in the repository",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Implement scanning tools to detect, prevent, and monitor known open-source vulnerabilities in packages used within the organization's projects. This check verifies that dependency/package vulnerability scanning (e.g., Dependabot alerts) is enabled for the repository.",
+    "Risk": "If package vulnerability scanning is not enabled, known vulnerabilities in dependencies may go undetected, increasing the risk of exploitation and security breaches.",
+    "RelatedUrl": "https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable Dependabot alerts or another package vulnerability scanner in the repository settings to automatically detect and alert on vulnerable dependencies.",
+        "Url": "https://docs.github.com/en/code-security/dependabot/dependabot-alerts/about-dependabot-alerts"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_has_codeowners_file",
+    "CheckTitle": "Check if repositories have a CODEOWNERS file",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that repositories have a CODEOWNERS file.",
+    "Risk": "Not having a CODEOWNERS file in a repository may lead to unclear code ownership and review responsibilities, increasing the risk of unreviewed or unauthorized changes.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Add a CODEOWNERS file to the root, .github/, or docs/ directory of the repository. The file should specify code owners for files and directories as appropriate for your organization.",
+        "Url": "https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_immutable_releases_enabled",
+    "CheckTitle": "Repository has immutable releases enabled",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Immutable releases prevent modification or replacement of published artifacts after publication. When enabled, release assets and binaries become tamper-proof, ensuring artifact integrity throughout the software supply chain.",
+    "Risk": "If immutable releases are disabled, release assets can be tampered with after publication, allowing attackers to substitute malicious binaries and undermining supply chain integrity.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/releasing-projects-on-github/managing-releases-in-a-repository#preventing-changes-to-releases",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable immutable releases in the repository settings so release artifacts cannot be altered once published.",
+        "Url": "https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/immutable-releases"
+      }
+    },
+    "Categories": [
+      "software-supply-chain"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_inactive_not_archived",
+    "CheckTitle": "Check for inactive repositories that are not archived",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that repositories with no activity are reviewed and considered for archival. Inactive repositories may have outdated dependencies or security configurations that could pose security risks.",
+    "Risk": "Inactive repositories that are not archived may contain outdated dependencies, unpatched vulnerabilities, or misconfigured security settings. These repositories increase the attack surface and could be targeted by malicious actors.",
+    "RelatedUrl": "https://docs.github.com/en/repositories/archiving-a-github-repository/archiving-repositories",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Review inactive repositories and either: 1) Archive them if they are no longer needed, 2) Update their dependencies and security configurations if they are still required, or 3) Delete them if they contain no valuable information.",
+        "Url": "https://docs.github.com/en/repositories/archiving-a-github-repository/archiving-repositories"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_public_has_securitymd_file",
+    "CheckTitle": "Check if public repositories have a SECURITY.md file",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "low",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that public repositories have a SECURITY.md file",
+    "Risk": "Not having a SECURITY.md file in a public repository may lead to security vulnerabilities being overlooked by users and contributors.",
+    "RelatedUrl": "https://docs.github.com/en/code-security/getting-started/adding-a-security-policy-to-your-repository",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Add a SECURITY.md file to the root of the repository. The file should contain information on how to report a security vulnerability, the security policy of the repository, and any other relevant information.",
+        "Url": "https://github.blog/changelog/2019-05-23-security-policy/"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "github",
+    "CheckID": "repository_secret_scanning_enabled",
+    "CheckTitle": "Check if secret scanning is enabled to detect sensitive data in the repository",
+    "CheckType": [],
+    "ServiceName": "repository",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "github:user-id:repository/repository-name",
+    "Severity": "high",
+    "ResourceType": "GitHubRepository",
+    "ResourceGroup": "devops",
+    "Description": "Ensure that scanners are in place to detect and prevent sensitive data, such as confidential ID numbers, passwords, and other sensitive information, from being committed in the source code. This check verifies that secret scanning is enabled to identify and prevent sensitive data from being included in the repository.",
+    "Risk": "If secret scanning is not enabled, sensitive data may be inadvertently committed to the repository, increasing the risk of data breaches and exploitation by attackers.",
+    "RelatedUrl": "https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Enable secret scanning in the repository settings to automatically detect and prevent sensitive data from being committed to the codebase.",
+        "Url": "https://docs.github.com/en/code-security/secret-scanning/about-secret-scanning"
+      }
+    },
+    "Categories": [],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  }
+]

@@ -1,0 +1,1898 @@
+[
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "analytics_instance_access_restricted",
+    "CheckTitle": "Oracle Analytics Cloud instance is deployed within a Virtual Cloud Network or restricts public access to allowed sources",
+    "CheckType": [],
+    "ServiceName": "analytics",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "AnalyticsInstance",
+    "ResourceGroup": "analytics",
+    "Description": "Oracle Analytics Cloud endpoints are evaluated for **network exposure**. Public endpoints must use **restricted allowlists** of specific IPs/CIDRs; presence of `0.0.0.0/0` or no allowed sources indicates unrestricted access. Instances using a **VCN/private endpoint** or public endpoints limited to specific sources align with the intended exposure model.",
+    "Risk": "Unrestricted OAC endpoints allow Internet-wide access to the login surface, enabling **credential stuffing** and **brute force**. Account takeover can expose **reports and data sources** (**confidentiality**), permit **dashboard/model changes** (**integrity**), and support **lateral movement** into connected systems.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"oci_analytics_analytics_instance\" \"example\" {\n  compartment_id    = \"\u003cexample_resource_id\u003e\"\n  name              = \"\u003cexample_resource_name\u003e\"\n  feature_set       = \"ENTERPRISE_ANALYTICS\"\n  license_type      = \"LICENSE_INCLUDED\"\n  idcs_access_token = \"\u003cexample_resource_id\u003e\"\n\n  capacity {\n    capacity_type  = \"OLPU_COUNT\"\n    capacity_value = 1\n  }\n\n  network_endpoint_details {\n    network_endpoint_type = \"PUBLIC\"\n    whitelisted_ips       = [\"\u003cexample_resource_id\u003e\"] # Critical: restrict to specific allowed CIDR; not 0.0.0.0/0\n  }\n}\n```",
+        "CLI": "",
+        "Other": "1. In OCI Console, go to Analytics \u0026 AI \u003e Analytics Cloud and select your instance\n2. On Instance Details, under Network Access, click Edit next to Access Control\n3. Remove any 0.0.0.0/0 entry (if present)\n4. Add an access rule with the specific allowed public IP or CIDR\n5. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Prefer **private deployment in a VCN** and apply **least privilege** network access. *If public is required*, enforce **allowlists** to specific IPs/CIDRs and never include `0.0.0.0/0`. Use **private access channels/service gateways**, require **MFA/SSO**, and apply **defense in depth** (WAF, audit monitoring) to reduce exposure.",
+        "Url": "https://hub.prowler.com/check/analytics_instance_access_restricted"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.public.content.oci.oraclecloud.com/en-us/iaas/analytics-cloud/doc/public-endpoints-and-access-control-rules.html",
+      "https://docs.oracle.com/en/cloud/paas/analytics-cloud/acsds/connect-databases-deployed-public-ip-address.html",
+      "https://docs.oracle.com/en/cloud/paas/analytics-cloud/acoci/top-faqs-public-or-private-endpoint-security.html",
+      "https://docs.oracle.com/en/cloud/paas/analytics-cloud/acoci/manage-ingress-access-rules-public-endpoint-using-console.html",
+      "https://docs.oracle.com/en-us/iaas/analytics-cloud/doc/public-endpoints-and-access-control-rules.html"
+    ],
+    "Categories": [
+      "internet-exposed",
+      "trust-boundaries"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "audit_log_retention_period_365_days",
+    "CheckTitle": "Tenancy audit log retention period is 365 days or greater",
+    "CheckType": [],
+    "ServiceName": "audit",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Compartment",
+    "ResourceGroup": "governance",
+    "Description": "**OCI Audit configuration** defines tenancy-wide log retention for audit events. The finding evaluates whether the retention period (days) is `\u003e= 365` and that an audit configuration exists, *applying across all regions and compartments*.",
+    "Risk": "**Insufficient audit retention** or missing configuration shrinks the **detection window** and breaks **accountability**.\n\nEvidence for older actions may be unavailable, enabling attackers to evade detection, mask **data exfiltration**, and impede **forensic reconstruction** and compliance reporting.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"oci_audit_configuration\" \"\u003cexample_resource_name\u003e\" {\n  compartment_id        = var.tenancy_ocid\n  retention_period_days = 365 # Critical: sets audit log retention to 365 days to pass the check\n}\n```",
+        "CLI": "oci audit configuration update --compartment-id \u003ctenancy-ocid\u003e --retention-period-days 365",
+        "Other": "1. Open the OCI Console and go to Governance \u0026 Administration \u003e Audit\n2. Click Configuration\n3. Set Retention period (days) to 365\n4. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Set audit retention to `\u003e= 365` days at the tenancy level and protect the setting with **least privilege** and **separation of duties**.\n\nAdopt **defense in depth**: export audit logs to centralized, immutable storage or a SIEM for extended retention, integrity, and continuous monitoring.",
+        "Url": "https://hub.prowler.com/check/audit_log_retention_period_365_days"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.oracle.com/en-us/iaas/Content/Audit/Tasks/settingretentionperiod.htm",
+      "https://docs.oracle.com/en-us/iaas/tools/terraform-provider-oci/4.88.1/docs/r/audit_configuration.html"
+    ],
+    "Categories": [
+      "logging",
+      "forensics-ready"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "blockstorage_block_volume_encrypted_with_cmk",
+    "CheckTitle": "Block volume is encrypted with a Customer Managed Key (CMK)",
+    "CheckType": [],
+    "ServiceName": "blockstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "Volume",
+    "ResourceGroup": "storage",
+    "Description": "**OCI block volumes** use **Customer-Managed Keys** (`CMK`) from Vault for at-rest encryption instead of Oracle-managed keys.\n\nIdentifies whether a block volume has a customer-managed key associated for its encryption.",
+    "Risk": "Without **CMK**, encryption key control is limited, impacting confidentiality and auditability:\n- No rapid key disable/rotation to contain breaches\n- Weaker restrictions and visibility on decrypt operations\nThis can prolong unauthorized data access and hinder incident response and compliance.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"oci_core_volume\" \"\u003cexample_resource_name\u003e\" {\n  compartment_id      = \"\u003cexample_resource_id\u003e\"\n  availability_domain = \"\u003cexample_resource_name\u003e\"\n  size_in_gbs         = 50\n\n  kms_key_id = \"\u003cexample_resource_id\u003e\" # Critical: uses a Customer Managed Key to encrypt the volume\n}\n```",
+        "CLI": "oci bv volume update --volume-id \u003cVOLUME_OCID\u003e --kms-key-id \u003cKMS_KEY_OCID\u003e",
+        "Other": "1. In the OCI Console, go to Block Storage \u003e Block Volumes\n2. Open the failing volume\n3. Click Edit\n4. Under Encryption, select \"Encrypt using customer-managed keys\" and choose the vault key\n5. Click Save changes"
+      },
+      "Recommendation": {
+        "Text": "Use **Customer-Managed Keys** in Vault for all block volumes.\n- Enforce least privilege and separation of duties on key usage\n- Rotate keys regularly and monitor KMS events\n- Validate that key disable/deny revokes data access\nApply the same controls to snapshots and backups.",
+        "Url": "https://hub.prowler.com/check/blockstorage_block_volume_encrypted_with_cmk"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/overview.htm"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "blockstorage_boot_volume_encrypted_with_cmk",
+    "CheckTitle": "Boot volume is encrypted with Customer Managed Key",
+    "CheckType": [],
+    "ServiceName": "blockstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "BootVolume",
+    "ResourceGroup": "storage",
+    "Description": "Boot volumes use **customer-managed keys (CMEK)** when a Vault key is assigned (`kms_key_id` present), rather than default Oracle-managed encryption.",
+    "Risk": "Without **CMEK**, control over encryption is limited: you cannot rapidly disable or rotate keys to contain compromise, weakening **confidentiality** of boot data and backups. Provider-managed keys reduce **separation of duties** and **auditability**, hindering incident response and compliance for sensitive systems.",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"oci_core_boot_volume_kms_key\" \"\u003cexample_resource_name\u003e\" {\n  boot_volume_id = \"\u003cexample_resource_id\u003e\"  # Critical: target boot volume to update\n  kms_key_id     = \"\u003cexample_resource_id\u003e\"  # Critical: assigns a Customer Managed Key (CMK) to the boot volume\n}\n```",
+        "CLI": "oci bv boot-volume update --boot-volume-id \u003cexample_resource_id\u003e --kms-key-id \u003cexample_resource_id\u003e",
+        "Other": "1. In the OCI Console, go to Storage \u003e Block Storage \u003e Boot Volumes\n2. Click the boot volume name\n3. Click Edit (or Assign master encryption key)\n4. Select a Customer-managed key from Vault\n5. Click Save"
+      },
+      "Recommendation": {
+        "Text": "Encrypt boot volumes with **customer-managed keys** and enforce **least privilege** on key usage. Define a key lifecycle (new keys for rotation), monitor and audit key access, and restrict key scope to required compartments and services to achieve **defense in depth** and rapid revocation when needed.",
+        "Url": "https://hub.prowler.com/check/blockstorage_boot_volume_encrypted_with_cmk"
+      }
+    },
+    "AdditionalURLs": [
+      "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-BlockVolume/block-volumes-encrypted-with-cmks.html",
+      "https://docs.public.content.oci.oraclecloud.com/en-us/iaas/Content/Block/Concepts/managingblockencryptionkeys.htm"
+    ],
+    "Categories": [
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "cloudguard_enabled",
+    "CheckTitle": "Cloud Guard is enabled in the root compartment of the tenancy",
+    "CheckType": [],
+    "ServiceName": "cloudguard",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "high",
+    "ResourceType": "Compartment",
+    "ResourceGroup": "governance",
+    "Description": "**OCI Cloud Guard** status in the tenancy's root compartment is evaluated, expecting `ENABLED` to indicate the service is active for organization-wide detection and response.",
+    "Risk": "Without **Cloud Guard** at the root, signals across compartments can be missed, allowing misconfigurations and malicious activity to persist. This undermines confidentiality (undetected data access), integrity (unauthorized changes), and availability (ongoing abuse without automated response).",
+    "RelatedUrl": "",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "```hcl\nresource \"oci_cloud_guard_cloud_guard_configuration\" \"\u003cexample_resource_name\u003e\" {\n  compartment_id   = var.tenancy_ocid\n  reporting_region = var.region\n  status           = \"ENABLED\" # Critical: Turns on Cloud Guard in the root compartment\n}\n```",
+        "CLI": "oci cloud-guard cloud-guard-configuration update --compartment-id \u003ctenancy-ocid\u003e --status ENABLED --reporting-region \u003cregion\u003e",
+        "Other": "1. In the OCI Console, go to Security \u003e Cloud Guard\n2. Ensure the root compartment is selected\n3. Click Enable Cloud Guard\n4. Choose a Reporting region\n5. Click Enable"
+      },
+      "Recommendation": {
+        "Text": "Enable **Cloud Guard** at the tenancy root to centralize monitoring and automated response. Apply **defense in depth** by using detectors/responders, integrate alerts with monitoring, and enforce **least privilege** for its roles. Regularly tune policies and review findings to prevent blind spots.",
+        "Url": "https://hub.prowler.com/check/cloudguard_enabled"
+      }
+    },
+    "AdditionalURLs": [
+      "https://docs.oracle.com/en-us/iaas/cloud-guard/home.htm"
+    ],
+    "Categories": [
+      "forensics-ready"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "compute_instance_in_transit_encryption_enabled",
+    "CheckTitle": "Ensure In-transit Encryption is enabled on Compute Instance",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:compute:instance",
+    "Severity": "high",
+    "ResourceType": "OciComputeInstance",
+    "ResourceGroup": "compute",
+    "Description": "In-transit encryption protects data as it moves between the compute instance and block volumes. This is implemented through the Oracle Cloud Agent management plugin which enables encryption for block volume attachments.",
+    "Risk": "Without in-transit encryption, data moving between compute instances and block volumes could be intercepted or tampered with during transmission.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Block/Concepts/blockvolumeencryption.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_core_instance\" \"example\" {\n  # ... other configuration ...\n  agent_config {\n    is_management_disabled = false\n  }\n}",
+        "CLI": "oci compute instance update --instance-id \u003cinstance-ocid\u003e --agent-config '{\"isManagementDisabled\": false}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Compute/enable-encryption-in-transit.html"
+      },
+      "Recommendation": {
+        "Text": "Enable the Oracle Cloud Agent management plugin on all compute instances to enable in-transit encryption for block volume attachments.",
+        "Url": "https://hub.prowler.com/check/oci/compute_instance_in_transit_encryption_enabled"
+      }
+    },
+    "Categories": [
+      "compute",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "compute_instance_legacy_metadata_endpoint_disabled",
+    "CheckTitle": "Ensure Compute Instance Legacy Metadata service endpoint is disabled",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:compute:instance",
+    "Severity": "medium",
+    "ResourceType": "OciComputeInstance",
+    "ResourceGroup": "compute",
+    "Description": "The legacy Instance Metadata Service (IMDS) v1 endpoints do not use session authentication. Disabling the legacy endpoints helps prevent unauthorized access to instance metadata.",
+    "Risk": "If legacy metadata endpoints are enabled, attackers who gain access to the instance may be able to access instance metadata without authentication, potentially exposing sensitive information.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Compute/Tasks/gettingmetadata.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_core_instance\" \"example\" {\n  # ... other configuration ...\n  instance_options {\n    are_legacy_imds_endpoints_disabled = true\n  }\n}",
+        "CLI": "oci compute instance update --instance-id \u003cinstance-ocid\u003e --instance-options '{\"areLegacyImdsEndpointsDisabled\": true}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Compute/enforce-imds-v2.html"
+      },
+      "Recommendation": {
+        "Text": "Disable legacy metadata service endpoints on all compute instances to enforce session-based authentication.",
+        "Url": "https://hub.prowler.com/check/oci/compute_instance_legacy_metadata_endpoint_disabled"
+      }
+    },
+    "Categories": [
+      "compute",
+      "security-configuration"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "compute_instance_secure_boot_enabled",
+    "CheckTitle": "Ensure Secure Boot is enabled on Compute Instance",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "compute",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:compute:instance",
+    "Severity": "medium",
+    "ResourceType": "OciComputeInstance",
+    "ResourceGroup": "compute",
+    "Description": "Secure Boot helps ensure that the instance boots using only software that is trusted by the platform firmware. This prevents rootkits and bootkits from loading during the boot process.",
+    "Risk": "Without Secure Boot enabled, instances are vulnerable to boot-level malware that can compromise the entire system before the operating system loads.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Compute/References/shielded-instances.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_core_instance\" \"example\" {\n  # ... other configuration ...\n  platform_config {\n    type = \"AMD_MILAN_BM\" # or appropriate platform\n    is_secure_boot_enabled = true\n  }\n}",
+        "CLI": "oci compute instance update --instance-id \u003cinstance-ocid\u003e --platform-config '{\"isSecureBootEnabled\": true}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Compute/enable-secure-boot.html"
+      },
+      "Recommendation": {
+        "Text": "Enable Secure Boot on all compute instances to protect against boot-level malware and ensure system integrity.",
+        "Url": "https://hub.prowler.com/check/oci/compute_instance_secure_boot_enabled"
+      }
+    },
+    "Categories": [
+      "compute",
+      "security-configuration"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "database_autonomous_database_access_restricted",
+    "CheckTitle": "Ensure Oracle Autonomous Shared Database (ADB) access is restricted or deployed within a VCN",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "database",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:database:autonomousdatabase",
+    "Severity": "high",
+    "ResourceType": "AutonomousDatabase",
+    "ResourceGroup": "database",
+    "Description": "Autonomous Shared Database instances should either have IP whitelisting configured or be deployed within a VCN to restrict network access and improve security posture.",
+    "Risk": "Public or unrestricted Autonomous Database access increases the attack surface and risk of unauthorized access.",
+    "RelatedUrl": "https://docs.oracle.com/en/cloud/paas/autonomous-database/adbsa/autonomous-private-endpoints.html",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_database_autonomous_database\" \"adb\" {\n  compartment_id = var.compartment_id\n  db_name = \"MyADB\"\n  display_name = \"My Autonomous Database\"\n  is_free_tier = false\n  db_workload = \"OLTP\"\n  whitelisted_ips = [\"10.0.0.0/24\"]\n  nsg_ids = [oci_core_network_security_group.adb_nsg.id]\n  subnet_id = oci_core_subnet.private_subnet.id\n}",
+        "CLI": "oci db autonomous-database create-private-endpoint --autonomous-database-id \u003cadb-ocid\u003e --subnet-id \u003csubnet-ocid\u003e",
+        "Other": "1. Navigate to Autonomous Database\n2. Select the database instance\n3. Click 'More Actions' → 'Update'\n4. Under Network Access, select 'Private endpoint access only'\n5. Configure VCN and subnet for private endpoint\n6. Alternatively, configure Access Control List (ACL) with specific IP addresses"
+      },
+      "Recommendation": {
+        "Text": "Deploy Autonomous Databases within a VCN using private endpoints or configure strict IP whitelisting to restrict access.",
+        "Url": "https://hub.prowler.com/check/oci/database_autonomous_database_access_restricted"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_notification_topic_and_subscription_exists",
+    "CheckTitle": "Create at least one notification topic and subscription to receive monitoring alerts",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "At least one notification topic and subscription should exist to receive monitoring alerts.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Create at least one notification topic and subscription to receive monitoring alerts",
+        "Url": "https://hub.prowler.com/check/oci/events_notification_topic_and_subscription_exists"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_cloudguard_problems",
+    "CheckTitle": "Ensure a notification is configured for Oracle Cloud Guard problems detected",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventRule",
+    "ResourceGroup": "messaging",
+    "Description": "Ensure a notification is configured for Oracle Cloud Guard problems detected",
+    "Risk": "Without Cloud Guard, security threats may not be detected and remediated.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/cloud-guard/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_cloud_guard_cloud_guard_configuration\" \"example\" {\n  compartment_id = var.tenancy_ocid\n  reporting_region = var.region\n  status = \"ENABLED\"\n}",
+        "CLI": "oci cloud-guard configuration update --compartment-id \u003ctenancy-ocid\u003e --status ENABLED --reporting-region \u003cregion\u003e",
+        "Other": "1. Navigate to Security \u003e Cloud Guard\n2. Enable Cloud Guard\n3. Select reporting region\n4. Configure detectors and responders"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for Oracle Cloud Guard problems detected",
+        "Url": "https://hub.prowler.com/check/oci/cloudguard_notification_configured"
+      }
+    },
+    "Categories": [
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_iam_group_changes",
+    "CheckTitle": "Ensure a notification is configured for IAM group changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on IAM group changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for IAM group changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_iam_group_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_iam_policy_changes",
+    "CheckTitle": "Ensure a notification is configured for IAM policy changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on IAM policy changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for IAM policy changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_iam_policy_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_identity_provider_changes",
+    "CheckTitle": "Ensure a notification is configured for Identity Provider changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on identity provider changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for Identity Provider changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_identity_provider_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_idp_group_mapping_changes",
+    "CheckTitle": "Ensure a notification is configured for IdP group mapping changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on IdP group mapping changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for IdP group mapping changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_idp_group_mapping_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_local_user_authentication",
+    "CheckTitle": "Ensure a notification is configured for Local OCI User Authentication",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventRule",
+    "ResourceGroup": "messaging",
+    "Description": "Ensure that an Event Rule and Notification are configured to detect when a user authenticates via OCI local authentication. Event Rules are compartment-scoped and will detect events in child compartments. This Event rule is required to be created at the root compartment level.",
+    "Risk": "Without proper notification for local user authentication events, unauthorized access attempts or suspicious authentication activity may go undetected, increasing the risk of security breaches.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"user_auth_rule\" {\n  display_name    = \"user-authentication-events\"\n  is_enabled      = true\n  compartment_id  = var.tenancy_ocid\n  condition       = \"{\\\"eventType\\\":[\\\"com.oraclecloud.identitysignon.interactivelogin\\\"]}\"\n  actions {\n    actions {\n      action_type = \"ONS\"\n      is_enabled  = true\n      topic_id    = oci_ons_notification_topic.topic.id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name user-authentication-rule --is-enabled true --condition '{\"eventType\":[\"com.oraclecloud.identitysignon.interactivelogin\"]}' --compartment-id \u003croot-compartment-ocid\u003e --actions '{\"actions\":[{\"actionType\":\"ONS\",\"isEnabled\":true,\"topicId\":\"\u003ctopic-ocid\u003e\"}]}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Events/detect-oci-local-authentication.html"
+      },
+      "Recommendation": {
+        "Text": "Create an Event Rule with notifications configured to monitor local OCI user authentication events (com.oraclecloud.identitysignon.interactivelogin)",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_local_user_authentication"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring",
+      "security-configuration"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_network_gateway_changes",
+    "CheckTitle": "Ensure a notification is configured for changes to network gateways",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on network gateway changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for changes to network gateways",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_network_gateway_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_network_security_group_changes",
+    "CheckTitle": "Ensure a notification is configured for network security group changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on network security group changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for network security group changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_network_security_group_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_route_table_changes",
+    "CheckTitle": "Ensure a notification is configured for changes to route tables",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on route table changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for changes to route tables",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_route_table_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_security_list_changes",
+    "CheckTitle": "Ensure a notification is configured for security list changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on security list changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for security list changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_security_list_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_user_changes",
+    "CheckTitle": "Ensure a notification is configured for user changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on user changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for user changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_user_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "events_rule_vcn_changes",
+    "CheckTitle": "Ensure a notification is configured for VCN changes",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "events",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:events:rule",
+    "Severity": "medium",
+    "ResourceType": "OciEventsRule",
+    "ResourceGroup": "messaging",
+    "Description": "Event rules should be configured to notify on VCN changes.",
+    "Risk": "Without proper event monitoring, security-relevant changes may go unnoticed.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Events/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_events_rule\" \"example\" {\n  display_name = \"rule\"\n  is_enabled = true\n  condition = jsonencode({\n    eventType = [\"com.oraclecloud.*\"]\n  })\n  actions {\n    actions {\n      action_type = \"ONS\"\n      topic_id = var.topic_id\n    }\n  }\n}",
+        "CLI": "oci events rule create --display-name \u003cname\u003e --condition \u003cevent-condition\u003e --actions \u003cnotification-actions\u003e",
+        "Other": "1. Navigate to Observability \u0026 Management \u003e Events Service\n2. Create a new rule\n3. Configure the event condition\n4. Add notification action\n5. Save the rule"
+      },
+      "Recommendation": {
+        "Text": "Ensure a notification is configured for VCN changes",
+        "Url": "https://hub.prowler.com/check/oci/events_rule_vcn_changes"
+      }
+    },
+    "Categories": [
+      "logging",
+      "monitoring"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "filestorage_file_system_encrypted_with_cmk",
+    "CheckTitle": "Ensure File Storage Systems are encrypted with Customer Managed Keys",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "filestorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:filestorage:resource",
+    "Severity": "medium",
+    "ResourceType": "OciFilestorageResource",
+    "ResourceGroup": "storage",
+    "Description": "File systems should be encrypted with Customer Managed Keys (CMK) for enhanced security and control over encryption keys.",
+    "Risk": "Not meeting this requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-FileStorage/file-storage-systems-encrypted-with-cmks.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure File Storage Systems are encrypted with Customer Managed Keys",
+        "Url": "https://hub.prowler.com/check/oci/filestorage_file_system_encrypted_with_cmk"
+      }
+    },
+    "Categories": [
+      "security-configuration"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_iam_admins_cannot_update_tenancy_admins",
+    "CheckTitle": "Ensure IAM administrators cannot update tenancy Administrators group",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "high",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "IAM administrators should not be able to update the tenancy Administrators group.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/protect-administrators-group-with-access-policies.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure IAM administrators cannot update tenancy Administrators group",
+        "Url": "https://hub.prowler.com/check/oci/identity_iam_admins_cannot_update_tenancy_admins"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_instance_principal_used",
+    "CheckTitle": "Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Instance Principal authentication should be used instead of user credentials.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure Instance Principal authentication is used for OCI instances, OCI Cloud Databases and OCI Functions to access OCI resources",
+        "Url": "https://hub.prowler.com/check/oci/identity_instance_principal_used"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_no_resources_in_root_compartment",
+    "CheckTitle": "Ensure no resources are created in the root compartment",
+    "CheckType": [],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:tenancy",
+    "Severity": "high",
+    "ResourceType": "OciTenancy",
+    "ResourceGroup": "governance",
+    "Description": "The root compartment is the top-level compartment in your tenancy and should be used only for management purposes. All other cloud resources should be created in child compartments to maintain proper organization, access control, and resource isolation.",
+    "Risk": "Creating resources in the root compartment bypasses the benefits of compartmentalization, makes access control management difficult, violates the principle of least privilege, and increases the risk of unauthorized access to resources. It also makes it harder to implement effective IAM policies and resource governance.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/check-for-root-compartment-resources.html"
+      },
+      "Recommendation": {
+        "Text": "Move all resources from the root compartment to appropriate child compartments. From OCI Console: 1. Identify resources in the root compartment. 2. Create or select appropriate child compartments. 3. Move resources to child compartments using the 'Move Resource' option available for most resource types. 4. Update any policies or automation that reference root compartment resources.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_non_root_compartment_exists",
+    "CheckTitle": "Create at least one non-root compartment in your tenancy to store cloud resources",
+    "CheckType": [],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:tenancy",
+    "Severity": "high",
+    "ResourceType": "OciTenancy",
+    "ResourceGroup": "governance",
+    "Description": "Compartments are used to organize and isolate your cloud resources. Creating at least one compartment is a fundamental best practice for organizing resources in your tenancy. The root compartment should not be used directly for resource creation.",
+    "Risk": "Without proper compartmentalization, resource management becomes difficult, access control is harder to implement, and it violates the principle of least privilege. Using only the root compartment makes it impossible to implement proper resource isolation and access controls.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci iam compartment create --compartment-id \u003ctenancy_ocid\u003e --name \u003ccompartment_name\u003e --description '\u003cdescription\u003e'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/create-non-root-compartment.html"
+      },
+      "Recommendation": {
+        "Text": "Create at least one compartment to organize your cloud resources. From OCI Console: 1. Navigate to Identity \u0026 Security -\u003e Compartments. 2. Click 'Create Compartment'. 3. Enter a name and description. 4. Select the parent compartment (typically the root). 5. Click 'Create Compartment'.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcompartments.htm"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_password_policy_expires_within_365_days",
+    "CheckTitle": "Ensure IAM password policy expires passwords within 365 days",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Password policy should expire passwords within 365 days.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure IAM password policy expires passwords within 365 days",
+        "Url": "https://hub.prowler.com/check/oci/identity_password_policy_expires_within_365_days"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_password_policy_minimum_length_14",
+    "CheckTitle": "Ensure IAM password policy requires minimum length of 14 or greater",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:tenancy",
+    "Severity": "medium",
+    "ResourceType": "OciIamPasswordPolicy",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure IAM password policy requires minimum length of 14 or greater. Password policies are used to enforce password complexity requirements. IAM password policies can be used to ensure password are at least a certain length. It is recommended that the password policy require a minimum password length 14.",
+    "Risk": "Setting a password complexity policy increases account resiliency against brute force login attempts.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci iam authentication-policy update --compartment-id \u003ctenancy-ocid\u003e --password-policy '{\"minimumPasswordLength\": 14}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/require-14-characters-password-policy.html"
+      },
+      "Recommendation": {
+        "Text": "Make sure IAM password policy requires a minimum password length of 14 or more characters.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_password_policy_prevents_reuse",
+    "CheckTitle": "Ensure IAM password policy prevents password reuse",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Password policy should prevent password reuse.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure IAM password policy prevents password reuse",
+        "Url": "https://hub.prowler.com/check/oci/identity_password_policy_prevents_reuse"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_service_level_admins_exist",
+    "CheckTitle": "Ensure service level admins are created to manage resources of particular service",
+    "CheckType": [],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "OciIdentityPolicy",
+    "ResourceGroup": "IAM",
+    "Description": "To apply least-privilege security principle, create service-level administrators in corresponding groups and assign specific users to each service-level administrative group in a tenancy. This limits administrative access to specific services.",
+    "Risk": "Without service-level administrators, there is a risk of excessive permissions being granted, violating the principle of least privilege.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Concepts/policygetstarted.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_identity_policy\" \"service_admin_policy\" {\n  compartment_id = var.compartment_id\n  name = \"ServiceLevelAdminPolicy\"\n  description = \"Service-level admin policy\"\n  statements = [\n    \"Allow group VolumeAdmins to manage volume-family in compartment Production\"\n  ]\n}",
+        "CLI": "oci iam policy create --compartment-id \u003ccompartment-ocid\u003e --name \u003cpolicy-name\u003e --description '\u003cpolicy-description\u003e' --statements '[\"Allow group \u003cGroupName\u003e to manage \u003cservice\u003e-family in compartment \u003cCompartmentName\u003e\"]'",
+        "Other": "1. Navigate to Identity → Policies\n2. Click 'Create Policy'\n3. Create policies granting service-level admin permissions to specific groups in specific compartments\n4. Example: 'Allow group VolumeAdmins to manage volume-family in compartment Production'"
+      },
+      "Recommendation": {
+        "Text": "Create service-level administrators with limited permissions to specific services within compartments.",
+        "Url": "https://docs.prowler.com/checks/oci/oci-iam-policies/identity_service_level_admins_exist"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_tenancy_admin_permissions_limited",
+    "CheckTitle": "Ensure permissions on all resources are given only to the tenancy administrator group",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "high",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Only the tenancy administrator group should have permissions to manage all resources in the tenancy.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/tenancy-administrator-group-access.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure permissions on all resources are given only to the tenancy administrator group",
+        "Url": "https://hub.prowler.com/check/oci/identity_tenancy_admin_permissions_limited"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_tenancy_admin_users_no_api_keys",
+    "CheckTitle": "Ensure API keys are not created for tenancy administrator users",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "high",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Tenancy administrator users should not have API keys.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure API keys are not created for tenancy administrator users",
+        "Url": "https://hub.prowler.com/check/oci/identity_tenancy_admin_users_no_api_keys"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_api_keys_rotated_90_days",
+    "CheckTitle": "Ensure user API keys rotate within 90 days or less",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamApiKey",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure user API keys rotate within 90 days or less. API keys are used to authenticate API calls. For security purposes, it is recommended that API keys be rotated regularly.",
+    "Risk": "Having API keys that have not been rotated in over 90 days increases the risk of unauthorized access if the key is compromised.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci iam api-key upload --user-id \u003cuser-ocid\u003e --key-file \u003cpath-to-new-public-key\u003e \u0026\u0026 oci iam api-key delete --user-id \u003cuser-ocid\u003e --fingerprint \u003cold-key-fingerprint\u003e",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/rotate-user-api-keys.html"
+      },
+      "Recommendation": {
+        "Text": "Rotate API keys that are older than 90 days by creating a new key and deleting the old one.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingcredentials.htm"
+      }
+    },
+    "Categories": [
+      "identity-access",
+      "secrets"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_auth_tokens_rotated_90_days",
+    "CheckTitle": "Ensure user auth tokens rotate within 90 days or less",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Auth tokens should be rotated within 90 days.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/rotate-user-auth-tokens.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure user auth tokens rotate within 90 days or less",
+        "Url": "https://hub.prowler.com/check/oci/identity_user_auth_tokens_rotated_90_days"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_customer_secret_keys_rotated_90_days",
+    "CheckTitle": "Ensure user customer secret keys rotate within 90 days or less",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Customer secret keys should be rotated within 90 days.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/rotate-customer-secret-keys.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure user customer secret keys rotate within 90 days or less",
+        "Url": "https://hub.prowler.com/check/oci/identity_user_customer_secret_keys_rotated_90_days"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_db_passwords_rotated_90_days",
+    "CheckTitle": "Ensure user IAM Database Passwords rotate within 90 days",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "medium",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Database passwords should be rotated within 90 days.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure user IAM Database Passwords rotate within 90 days",
+        "Url": "https://hub.prowler.com/check/oci/identity_user_db_passwords_rotated_90_days"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_mfa_enabled_console_access",
+    "CheckTitle": "Ensure MFA is enabled for all users with a console password",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "high",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "Ensure MFA is enabled for all users with a console password. Multi-factor authentication is a method of authentication that requires the use of more than one factor to verify a user's identity.",
+    "Risk": "Enabling MFA provides increased security by requiring two methods of verification at sign-in. With MFA enabled, a user must possess a device that emits a time-sensitive key and have knowledge of a username and password.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/usingmfa.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-IAM/enable-mfa-for-user-accounts.html"
+      },
+      "Recommendation": {
+        "Text": "Enable MFA for all users with console password access.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/usingmfa.htm"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "identity_user_valid_email_address",
+    "CheckTitle": "Ensure all OCI IAM user accounts have a valid and current email address",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "identity",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:identity:user",
+    "Severity": "low",
+    "ResourceType": "OciIamUser",
+    "ResourceGroup": "IAM",
+    "Description": "All user accounts should have valid email addresses.",
+    "Risk": "Not meeting this IAM requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Identity/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure all OCI IAM user accounts have a valid and current email address",
+        "Url": "https://hub.prowler.com/check/oci/identity_user_valid_email_address"
+      }
+    },
+    "Categories": [
+      "identity-access"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "integration_instance_access_restricted",
+    "CheckTitle": "Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "integration",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:integration:instance",
+    "Severity": "high",
+    "ResourceType": "IntegrationInstance",
+    "ResourceGroup": "compute",
+    "Description": "Oracle Integration Cloud access should be restricted to allowed sources.",
+    "Risk": "Not meeting this network security requirement increases risk of unauthorized access.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure Oracle Integration Cloud (OIC) access is restricted to allowed sources",
+        "Url": "https://hub.prowler.com/check/oci/integration_instance_access_restricted"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "kms_key_rotation_enabled",
+    "CheckTitle": "Ensure customer created Customer Managed Key (CMK) is rotated at least annually",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "kms",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:kms:resource",
+    "Severity": "medium",
+    "ResourceType": "OciKmsResource",
+    "ResourceGroup": "security",
+    "Description": "Customer Managed Keys should be rotated at least annually to reduce the risk of key compromise.",
+    "Risk": "Not meeting this requirement increases security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-KMS/rotate-customer-managed-keys.html",
+        "Terraform": "",
+        "CLI": "",
+        "Other": ""
+      },
+      "Recommendation": {
+        "Text": "Ensure customer created Customer Managed Key (CMK) is rotated at least annually",
+        "Url": "https://hub.prowler.com/check/oci/kms_key_rotation_enabled"
+      }
+    },
+    "Categories": [
+      "security-configuration"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_default_security_list_restricts_traffic",
+    "CheckTitle": "Ensure the default security list of every VCN restricts all traffic except ICMP",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:securitylist",
+    "Severity": "high",
+    "ResourceType": "OciNetworkSecurityList",
+    "ResourceGroup": "network",
+    "Description": "Ensure the default security list of every VCN restricts all traffic except ICMP within VCN. A default security list is automatically created when you create a VCN. It is recommended that the default security list restrict all traffic except for ICMP within the VCN.",
+    "Risk": "The default security list should not be used for any purpose other than as a fail-safe. It is recommended to create custom security lists for your resources.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci network security-list update --security-list-id \u003cdefault-security-list-ocid\u003e --ingress-security-rules \u003crestricted-rules-json\u003e --egress-security-rules \u003crestricted-rules-json\u003e",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/restrict-traffic-for-default-security-lists.html"
+      },
+      "Recommendation": {
+        "Text": "Configure the default security list to restrict all traffic except ICMP within the VCN. Create custom security lists for your resources.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_security_group_ingress_from_internet_to_rdp_port",
+    "CheckTitle": "Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:vcn",
+    "Severity": "high",
+    "ResourceType": "OciVcn",
+    "ResourceGroup": "network",
+    "Description": "Network security groups should not allow unrestricted RDP access from the internet.",
+    "Risk": "Not meeting this network security requirement increases risk of unauthorized access.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/unrestricted-rdp-access-via-nsgs.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure no network security groups allow ingress from 0.0.0.0/0 to port 3389",
+        "Url": "https://hub.prowler.com/check/oci/network_security_group_ingress_from_internet_to_rdp_port"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_security_group_ingress_from_internet_to_ssh_port",
+    "CheckTitle": "Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:networksecuritygroup",
+    "Severity": "high",
+    "ResourceType": "OciNetworkSecurityGroup",
+    "ResourceGroup": "network",
+    "Description": "Ensure no network security groups allow ingress from 0.0.0.0/0 to port 22. Network security groups provide stateful or stateless filtering of ingress and egress network traffic to OCI resources.",
+    "Risk": "Removing unfettered connectivity to remote console services, such as SSH, reduces a server's exposure to risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci network nsg rules update --nsg-id \u003cnsg-ocid\u003e --security-rules \u003cupdated-rules-json\u003e",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/unrestricted-ssh-access-via-nsgs.html"
+      },
+      "Recommendation": {
+        "Text": "Update network security groups to remove ingress rules allowing access from 0.0.0.0/0 to port 22. Restrict SSH access to known IP addresses.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/networksecuritygroups.htm"
+      }
+    },
+    "Categories": [
+      "internet-exposed",
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_security_list_ingress_from_internet_to_rdp_port",
+    "CheckTitle": "Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:vcn",
+    "Severity": "high",
+    "ResourceType": "OciVcn",
+    "ResourceGroup": "network",
+    "Description": "Security lists should not allow unrestricted RDP access from the internet.",
+    "Risk": "Not meeting this network security requirement increases risk of unauthorized access.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/unrestricted-rdp-access.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure no security lists allow ingress from 0.0.0.0/0 to port 3389",
+        "Url": "https://hub.prowler.com/check/oci/network_security_list_ingress_from_internet_to_rdp_port"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_security_list_ingress_from_internet_to_ssh_port",
+    "CheckTitle": "Ensure no security lists allow ingress from 0.0.0.0/0 to port 22",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:securitylist",
+    "Severity": "high",
+    "ResourceType": "OciNetworkSecurityList",
+    "ResourceGroup": "network",
+    "Description": "Ensure no security lists allow ingress from 0.0.0.0/0 to port 22. Security lists provide stateful or stateless filtering of ingress and egress network traffic to OCI resources.",
+    "Risk": "Removing unfettered connectivity to remote console services, such as SSH, reduces a server's exposure to risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/unrestricted-ssh-access.html"
+      },
+      "Recommendation": {
+        "Text": "Update security lists to remove ingress rules allowing access from 0.0.0.0/0 to port 22. Restrict SSH access to known IP addresses.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Network/Concepts/securitylists.htm"
+      }
+    },
+    "Categories": [
+      "internet-exposed",
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "network_vcn_subnet_flow_logs_enabled",
+    "CheckTitle": "Ensure VCN flow logging is enabled for all subnets",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "network",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:network:subnet",
+    "Severity": "medium",
+    "ResourceType": "OciSubnet",
+    "ResourceGroup": "network",
+    "Description": "VCN flow logging should be enabled for all subnets.",
+    "Risk": "Not meeting this network security requirement increases risk of unauthorized access.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Network/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-Networking/enable-flow-logging.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure VCN flow logging is enabled for all subnets",
+        "Url": "https://hub.prowler.com/check/oci/network_vcn_subnet_flow_logs_enabled"
+      }
+    },
+    "Categories": [
+      "network-security"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "objectstorage_bucket_encrypted_with_cmk",
+    "CheckTitle": "Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "objectstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:objectstorage:bucket",
+    "Severity": "medium",
+    "ResourceType": "OciBucket",
+    "ResourceGroup": "storage",
+    "Description": "Object Storage buckets should be encrypted with Customer Managed Keys.",
+    "Risk": "Not meeting this storage security requirement increases data security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Object/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-ObjectStorage/buckets-encrypted-with-cmks.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure Object Storage Buckets are encrypted with a Customer Managed Key (CMK)",
+        "Url": "https://hub.prowler.com/check/oci/objectstorage_bucket_encrypted_with_cmk"
+      }
+    },
+    "Categories": [
+      "storage",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "objectstorage_bucket_logging_enabled",
+    "CheckTitle": "Ensure write level Object Storage logging is enabled for all buckets",
+    "CheckType": [],
+    "ServiceName": "objectstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "",
+    "Severity": "medium",
+    "ResourceType": "OciObjectStorageBucket",
+    "ResourceGroup": "storage",
+    "Description": "Write-level logging for Object Storage buckets provides an audit trail of all write operations (PUT, POST, DELETE) performed on buckets, enabling security monitoring and compliance requirements.",
+    "Risk": "Without write-level logging, unauthorized or malicious modifications to Object Storage data cannot be detected or investigated.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/loggingoverview.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "resource \"oci_logging_log\" \"objectstorage_write_log\" {\n  display_name = \"ObjectStorage-Write-Logs\"\n  log_group_id = oci_logging_log_group.log_group.id\n  log_type = \"SERVICE\"\n  configuration {\n    source {\n      category = \"write\"\n      resource = oci_objectstorage_bucket.bucket.name\n      service = \"objectstorage\"\n      source_type = \"OCISERVICE\"\n    }\n    compartment_id = var.compartment_id\n  }\n  is_enabled = true\n}",
+        "CLI": "oci logging log create --log-group-id \u003clog-group-ocid\u003e --display-name 'ObjectStorage-Write-Logs' --log-type SERVICE --configuration '{\"compartmentId\":\"\u003ccompartment-ocid\u003e\",\"source\":{\"service\":\"objectstorage\",\"resource\":\"\u003cbucket-name\u003e\",\"category\":\"write\",\"sourceType\":\"OCISERVICE\"}}'",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-ObjectStorage/enable-write-level-logging.html"
+      },
+      "Recommendation": {
+        "Text": "Enable write-level logging for all Object Storage buckets to maintain audit trails of data modifications.",
+        "Url": "https://docs.prowler.com/checks/oci/oci-logging/objectstorage_bucket_logging_enabled"
+      }
+    },
+    "Categories": [
+      "logging"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "objectstorage_bucket_not_publicly_accessible",
+    "CheckTitle": "Ensure no Object Storage buckets are publicly visible",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "objectstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:objectstorage:bucket",
+    "Severity": "critical",
+    "ResourceType": "OciObjectStorageBucket",
+    "ResourceGroup": "storage",
+    "Description": "Ensure no Object Storage buckets are publicly visible. Public access to Object Storage buckets can lead to unauthorized data access or data leakage.",
+    "Risk": "Publicly accessible Object Storage buckets can expose sensitive data to unauthorized users on the internet.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/managingbuckets.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "oci os bucket update --namespace \u003cnamespace\u003e --bucket-name \u003cbucket-name\u003e --public-access-type NoPublicAccess",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-ObjectStorage/publicly-accessible-buckets.html"
+      },
+      "Recommendation": {
+        "Text": "Update the bucket's public access type to 'NoPublicAccess' to prevent unauthorized access.",
+        "Url": "https://docs.oracle.com/en-us/iaas/Content/Object/Tasks/managingbuckets.htm"
+      }
+    },
+    "Categories": [
+      "internet-exposed",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  },
+  {
+    "Provider": "oraclecloud",
+    "CheckID": "objectstorage_bucket_versioning_enabled",
+    "CheckTitle": "Ensure Versioning is Enabled for Object Storage Buckets",
+    "CheckType": [
+      "Software and Configuration Checks",
+      "Industry and Regulatory Standards",
+      "CIS OCI Foundations Benchmark"
+    ],
+    "ServiceName": "objectstorage",
+    "SubServiceName": "",
+    "ResourceIdTemplate": "oci:objectstorage:bucket",
+    "Severity": "medium",
+    "ResourceType": "OciBucket",
+    "ResourceGroup": "storage",
+    "Description": "Object Storage buckets should have versioning enabled.",
+    "Risk": "Not meeting this storage security requirement increases data security risk.",
+    "RelatedUrl": "https://docs.oracle.com/en-us/iaas/Content/Object/home.htm",
+    "Remediation": {
+      "Code": {
+        "NativeIaC": "",
+        "Terraform": "",
+        "CLI": "",
+        "Other": "https://www.trendmicro.com/cloudoneconformity/knowledge-base/oci/OCI-ObjectStorage/enable-versioning.html"
+      },
+      "Recommendation": {
+        "Text": "Ensure Versioning is Enabled for Object Storage Buckets",
+        "Url": "https://hub.prowler.com/check/oci/objectstorage_bucket_versioning_enabled"
+      }
+    },
+    "Categories": [
+      "storage",
+      "encryption"
+    ],
+    "DependsOn": [],
+    "RelatedTo": [],
+    "Notes": ""
+  }
+]
